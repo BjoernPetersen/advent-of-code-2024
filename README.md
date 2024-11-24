@@ -2,5 +2,5 @@
 
 This repo contains solutions to [Advent of Code 2024][aoc] in Dart.
 
-[aoc]: https://adventofcode.com/2023
+[aoc]: https://adventofcode.com/2024
 
