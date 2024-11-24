@@ -7,6 +7,6 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    return 0;
+    return 1;
   }
 }
