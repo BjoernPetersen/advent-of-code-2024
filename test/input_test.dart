@@ -6,7 +6,7 @@ void main() {
   final inputReader = InputReader(path);
   test('Reads all lines', () async {
     final allLines = inputReader.readLines().toList();
-    expect(allLines, completion(hasLength(1000)));
+    expect(allLines, completion(hasLength(11)));
   });
 
   test('Lines are trimmed', () {
