@@ -1,0 +1,13 @@
+name: day_part
+description: Common base types for Day type generation
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  meta: ^1.0.0
+
+dev_dependencies:
+  lints: ^5.0.0

@@ -1,0 +1,11 @@
+builders:
+  day_builder:
+    import: "package:day_builder/builder.dart"
+    builder_factories: [ "dayBuilder" ]
+    build_extensions:
+      ".placeholder": [".g.dart"]
+    build_to: source
+    auto_apply: root_package
+    defaults:
+      generate_for:
+        - "lib/src/day.placeholder"

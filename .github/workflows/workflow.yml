@@ -1,0 +1,102 @@
+name: Workflow
+on:
+  push:
+    branches: [ main ]
+  pull_request: { }
+
+jobs:
+  validate-renovate-config:
+    name: Validate Renovate configuration
+    uses: BlindfoldedSurgery/renovate-config/.github/workflows/validate.yml@main
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          cache: false
+      - name: Get dependencies
+        run: dart pub get
+      - name: Run tests
+        run: dart test
+
+  check-format:
+    name: Check Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          cache: false
+      - name: Check formatting
+        run: dart format bin lib test day_builder/lib day_part/lib --set-exit-if-changed
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir:
+          - .
+          - day_builder
+          - day_part
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          cache: false
+      - name: Get dependencies
+        run: dart pub get
+        working-directory: ${{ matrix.dir }}
+      - name: Generate code
+        run: dart run build_runner build
+        if: matrix.dir == '.'
+        working-directory: ${{ matrix.dir }}
+      - name: Run Analysis
+        run: dart analyze --fatal-infos
+        working-directory: ${{ matrix.dir }}
+
+  build:
+    name: Build binary
+    needs:
+      - validate-renovate-config
+      - test
+      - check-format
+      - lint
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          # renovate: datasource=docker depName=dart
+          sdk: 3.5.4
+      - run: |
+          dart pub get
+          mkdir output
+      - if: matrix.runner != 'windows-latest'
+        run: |
+          if [ "${{ matrix.runner }}" == "ubuntu-latest" ]
+          then
+            os="linux"
+          else
+            os="macos"
+          fi
+          filename="output/advent-${os}"
+          dart compile exe bin/main.dart -o "$filename"
+          chmod +x "$filename"
+      - if: matrix.runner == 'windows-latest'
+        run: dart compile exe bin/main.dart -o "output/advent-win.exe"
+      - uses: actions/upload-artifact@v3
+        if: github.ref_name == github.event.repository.default_branch
+        with:
+          name: binaries
+          path: output/*
