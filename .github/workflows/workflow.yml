@@ -19,7 +19,7 @@ jobs:
         with:
           cache: false
       - name: Get dependencies
-        run: dart pub get
+        run: dart pub get --enforce-lockfile
       - name: Generate code
         run: dart run build_runner build
       - name: Run tests
@@ -53,7 +53,7 @@ jobs:
         with:
           cache: false
       - name: Get dependencies
-        run: dart pub get
+        run: dart pub get --enforce-lockfile
         working-directory: ${{ matrix.dir }}
       - name: Generate code
         run: dart run build_runner build
@@ -82,7 +82,7 @@ jobs:
           # renovate: datasource=docker depName=dart
           sdk: 3.5.4
       - run: |
-          dart pub get
+          dart pub get --enforce-lockfile
           dart run build_runner build
           mkdir output
       - if: matrix.runner != 'windows-latest'
