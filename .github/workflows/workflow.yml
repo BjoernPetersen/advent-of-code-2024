@@ -62,7 +62,7 @@ jobs:
         working-directory: ${{ matrix.dir }}
 
   build:
-    name: Build binary
+    name: Build Binary
     needs:
       - validate-renovate-config
       - test
