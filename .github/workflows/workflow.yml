@@ -81,6 +81,7 @@ jobs:
           sdk: 3.5.4
       - run: |
           dart pub get
+          dart run build_runner build
           mkdir output
       - if: matrix.runner != 'windows-latest'
         run: |
@@ -95,8 +96,8 @@ jobs:
           chmod +x "$filename"
       - if: matrix.runner == 'windows-latest'
         run: dart compile exe bin/main.dart -o "output/advent-win.exe"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: github.ref_name == github.event.repository.default_branch
         with:
-          name: binaries
+          name: binary-${{ matrix.runner }}
           path: output/*
