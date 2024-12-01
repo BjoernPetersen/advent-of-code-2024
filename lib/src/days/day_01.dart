@@ -1,6 +1,4 @@
-import 'package:collection/collection.dart';
-import 'package:day_part/day_part.dart';
-import 'package:meta/meta.dart';
+import 'package:aoc_core/aoc_core.dart';
 
 Future<(List<int>, List<int>)> _readInput(Stream<String> input) async {
   final left = <int>[];

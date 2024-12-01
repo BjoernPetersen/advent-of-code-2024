@@ -8,10 +8,10 @@ environment:
 
 dependencies:
   analyzer: any
+  aoc_core:
+    path: ../core
   build: ^2.0.0
   build_config: ^1.0.0
-  day_part:
-    path: ../day_part
   glob: any
 
 dev_dependencies:

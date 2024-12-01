@@ -7,11 +7,10 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
+  aoc_core:
+    path: core
   args: ^2.4.2
   async: ^2.11.0
-  collection: ^1.18.0
-  day_part:
-    path: day_part
   logger: ^2.0.0
   memoized: ^2.0.0
   meta: ^1.0.0

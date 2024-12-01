@@ -27,11 +27,12 @@ final class DayBuilder implements Builder {
 
   Future<Supertypes> _loadSupertypes(Resolver resolver) async {
     final lib = await resolver.libraryFor(
-      AssetId.resolve(Uri.parse('package:day_part/day_part.dart')),
+      AssetId.resolve(Uri.parse('package:aoc_core/aoc_core.dart')),
     );
+    final namespace = lib.exportNamespace;
     return Supertypes(
-      intPart: lib.getClass('IntPart')!.thisType,
-      stringPart: lib.getClass('StringPart')!.thisType,
+      intPart: (namespace.get('IntPart')! as ClassElement).thisType,
+      stringPart: (namespace.get('StringPart') as ClassElement).thisType,
     );
   }
 
@@ -107,7 +108,7 @@ final class DayBuilder implements Builder {
     final buffer = StringBuffer();
 
     // imports
-    buffer.writeln("import 'package:day_part/day_part.dart';");
+    buffer.writeln("import 'package:aoc_core/aoc_core.dart';");
 
     for (final day in dayDeclarations) {
       final asset = day.assetId;
