@@ -97,3 +97,11 @@ jobs:
         with:
           name: binary-${{ matrix.runner }}
           path: output/*
+
+  build-result:
+    name: Binaries Built
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - run: echo "Builds were successful"
