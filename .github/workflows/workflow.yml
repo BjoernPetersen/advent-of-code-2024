@@ -67,7 +67,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ ubuntu-latest, windows-latest, macos-latest ]
+        include:
+          - id: linux-amd64
+            runner: ubuntu-latest
+          - id: linux-arm64
+            runner: ubicloud-standard-2-arm
+          - id: macos-amd64
+            runner: macos-latest
+          - id: win-amd64
+            runner: windows-latest
+            filename: advent.exe
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
@@ -79,23 +88,13 @@ jobs:
           dart pub get --enforce-lockfile
           dart run build_runner build
           mkdir output
+      - run: dart compile exe bin/main.dart -o "output/${{ matrix.filename || 'advent' }}"
       - if: matrix.runner != 'windows-latest'
-        run: |
-          if [ "${{ matrix.runner }}" == "ubuntu-latest" ]
-          then
-            os="linux"
-          else
-            os="macos"
-          fi
-          filename="output/advent-${os}"
-          dart compile exe bin/main.dart -o "$filename"
-          chmod +x "$filename"
-      - if: matrix.runner == 'windows-latest'
-        run: dart compile exe bin/main.dart -o "output/advent-win.exe"
+        run: chmod +x "output/${{ matrix.filename || 'advent' }}"
       - uses: actions/upload-artifact@v4
         if: github.ref_name == github.event.repository.default_branch
         with:
-          name: binary-${{ matrix.runner }}
+          name: binary-${{ matrix.id }}
           path: output/*
 
   build-result:
