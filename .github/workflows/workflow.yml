@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
       - name: Check formatting
-        run: dart format bin lib test day_builder/lib day_part/lib --set-exit-if-changed
+        run: dart format bin lib test day_builder/lib core/lib --set-exit-if-changed
 
   lint:
     name: Lint
@@ -40,8 +40,8 @@ jobs:
       matrix:
         dir:
           - .
+          - core
           - day_builder
-          - day_part
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
