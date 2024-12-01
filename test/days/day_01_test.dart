@@ -12,7 +12,7 @@ void main() {
       final part = day.partOne as IntPart;
 
       for (final (example, expectedResult) in [
-        ('1', 1),
+        ('1', 11),
       ]) {
         test('example $example passes', () {
           final reader = getExampleReader(dayNum, example);
@@ -25,7 +25,7 @@ void main() {
 
       test('input passes', () {
         final reader = getInputReader(dayNum);
-        expect(part.calculate(reader.readLines()), completion(1));
+        expect(part.calculate(reader.readLines()), completion(2430334));
       });
     });
     group(
@@ -38,7 +38,7 @@ void main() {
         });
 
         for (final (example, expectedResult) in [
-          ('1', 1),
+          ('1', 31),
         ]) {
           test('example $example passes', () {
             final reader = getExampleReader(dayNum, example);
@@ -51,10 +51,10 @@ void main() {
 
         test('input passes', () {
           final reader = getInputReader(dayNum);
-          expect(part.calculate(reader.readLines()), completion(1));
+          expect(part.calculate(reader.readLines()), completion(28786472));
         });
       },
-      skip: true,
+      skip: false,
     );
   });
 }
