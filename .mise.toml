@@ -1,2 +1,6 @@
 [tools]
 dart = "3.5.4"
+
+[settings]
+asdf = false
+vfox = true

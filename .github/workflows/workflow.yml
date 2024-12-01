@@ -16,8 +16,6 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-        with:
-          cache: false
       - name: Get dependencies
         run: dart pub get --enforce-lockfile
       - name: Generate code
@@ -32,8 +30,6 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-        with:
-          cache: false
       - name: Check formatting
         run: dart format bin lib test day_builder/lib day_part/lib --set-exit-if-changed
 
@@ -50,8 +46,6 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-        with:
-          cache: false
       - name: Get dependencies
         run: dart pub get --enforce-lockfile
         working-directory: ${{ matrix.dir }}
