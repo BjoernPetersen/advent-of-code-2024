@@ -1,20 +1,21 @@
+import 'package:collection/collection.dart';
 import 'package:day_part/day_part.dart';
 import 'package:meta/meta.dart';
 
-Future<(List<int>, List<int>)> _build(Stream<String> input) async {
-  final a = <int>[];
-  final b = <int>[];
+Future<(List<int>, List<int>)> _readInput(Stream<String> input) async {
+  final left = <int>[];
+  final right = <int>[];
 
   await for (final line in input) {
-    final parts = line.split(' ');
-    a.add(int.parse(parts[0]));
-    b.add(int.parse(parts.last));
+    final parts = line.split('   ');
+
+    assert(parts.length == 2);
+
+    left.add(int.parse(parts[0]));
+    right.add(int.parse(parts[1]));
   }
 
-  a.sort();
-  b.sort();
-
-  return (a, b);
+  return (left, right);
 }
 
 @immutable
@@ -23,15 +24,11 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final (a, b) = await _build(input);
+    final (left, right) = await _readInput(input);
+    left.sort();
+    right.sort();
 
-    var sum = 0;
-    for (final (index, i) in a.indexed) {
-      final j = b[index];
-      sum += (i - j).abs();
-    }
-
-    return sum;
+    return left.mapIndexed((index, l) => (l - right[index]).abs()).sum;
   }
 }
 
@@ -41,21 +38,17 @@ final class PartTwo extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final (a, b) = await _build(input);
+    final (left, right) = await _readInput(input);
 
-    var sum = 0;
-    for (final i in a) {
-      var count = 0;
-      for (final j in b) {
-        if (j == i) {
-          count += 1;
-        } else if (j > i) {
-          break;
-        }
-      }
-      sum += count * i;
+    final counts = <int, int>{};
+    for (final b in right) {
+      counts.update(
+        b,
+        (old) => old + 1,
+        ifAbsent: () => 1,
+      );
     }
 
-    return sum;
+    return left.map((a) => (counts[a] ?? 0) * a).sum;
   }
 }
