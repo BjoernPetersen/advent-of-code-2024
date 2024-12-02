@@ -43,7 +43,7 @@ Future<void> main(List<String> args) async {
     } else {
       file = File(input);
     }
-    inputReader = InputReader(file);
+    inputReader = InputReader.forFile(file);
   } on ArgumentError catch (e) {
     print(e.message);
     print('\nUsage:\n${parser.usage}');

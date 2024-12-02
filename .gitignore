@@ -22,3 +22,7 @@ lib/**/*.g.dart
 lib/**/*.config.dart
 lib/src/version.dart
 lib/day.dart
+
+.env
+!.env.example
+inputs/
