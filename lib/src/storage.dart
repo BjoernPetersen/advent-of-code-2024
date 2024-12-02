@@ -52,6 +52,18 @@ final class StorageClient {
     return '$_objectPrefix/$objectName';
   }
 
+  Stream<String> listObjects() async* {
+    final prefix = '$_objectPrefix/';
+    await for (final objects in _minio.listObjects(
+      _bucket,
+      prefix: prefix,
+    )) {
+      for (final object in objects.objects) {
+        yield object.key!.substring(prefix.length);
+      }
+    }
+  }
+
   Future<void> writeFile(String objectName, File file) async {
     await writeBytes(objectName, file.readAsUint8Stream());
   }
