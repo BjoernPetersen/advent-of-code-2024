@@ -12,7 +12,7 @@ void main() {
       final part = day.partOne as IntPart;
 
       for (final (example, expectedResult) in [
-        ('1', 11),
+        ('instructions-1', 11),
       ]) {
         test('example $example passes', () {
           final reader = getExampleReader(dayNum, example);
@@ -38,7 +38,7 @@ void main() {
         });
 
         for (final (example, expectedResult) in [
-          ('1', 31),
+          ('instructions-1', 31),
         ]) {
           test('example $example passes', () {
             final reader = getExampleReader(dayNum, example);
