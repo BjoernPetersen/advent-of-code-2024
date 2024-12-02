@@ -77,6 +77,8 @@ final class PartTwo extends IntPart {
           preDampenerA = a;
           continue;
         } else if (!isReversed) {
+          // The first level kind of dictates our expectedSign, so in case that
+          // one's the culprit, we're trying the reversed report (lol).
           return _isSafe(
             report.reversed.toList(growable: false),
             isReversed: true,
@@ -93,6 +95,8 @@ final class PartTwo extends IntPart {
           preDampenerA = a;
           continue;
         } else if (!isReversed) {
+          // The first level kind of dictates our expectedSign, so in case that
+          // one's the culprit, we're trying the reversed report (lol).
           return _isSafe(
             report.reversed.toList(growable: false),
             isReversed: true,
