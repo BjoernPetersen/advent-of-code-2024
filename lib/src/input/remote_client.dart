@@ -4,12 +4,12 @@ import 'dart:typed_data';
 import 'package:dotenv/dotenv.dart';
 import 'package:minio/minio.dart';
 
-final class StorageClient {
+final class RemoteClient {
   final Minio _minio;
   final String _bucket;
   final String _objectPrefix = '2024';
 
-  StorageClient._({
+  RemoteClient._({
     required String endpoint,
     required String accessKey,
     required String secretKey,
@@ -29,10 +29,7 @@ final class StorageClient {
     return value;
   }
 
-  factory StorageClient.fromEnv() {
-    final env = DotEnv(includePlatformEnvironment: true);
-    env.load();
-
+  factory RemoteClient.fromEnv(DotEnv env) {
     final endpoint = _readEnv(env, 'S3_ENDPOINT');
     final accessKey = _readEnv(env, 'S3_ACCESS_KEY_ID');
     final secretKey = _readEnv(env, 'S3_SECRET_ACCESS_KEY');
@@ -40,7 +37,7 @@ final class StorageClient {
 
     final endpointHost = Uri.parse(endpoint).host;
 
-    return StorageClient._(
+    return RemoteClient._(
       endpoint: endpointHost,
       accessKey: accessKey,
       secretKey: secretKey,

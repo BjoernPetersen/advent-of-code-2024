@@ -1,68 +1,25 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:aoc/src/storage.dart';
+import 'package:aoc/src/input/input_reader.dart';
+import 'package:aoc/src/input/local.dart' as local;
+import 'package:aoc/src/input/remote.dart' as remote;
+import 'package:aoc/src/input/util.dart';
+import 'package:dotenv/dotenv.dart';
 
-abstract interface class InputReader {
-  Stream<String> readLines();
+export 'package:aoc/src/input/input_reader.dart';
 
-  factory InputReader.forFile(File file) {
-    return _FileReader(file);
+InputReader createReaderForFile(File path) => local.createReader(path);
+InputReader createReaderForDay(int day) {
+  final env = DotEnv(includePlatformEnvironment: true)..load();
+  if (env['USE_LOCAL_STORAGE'] == 'true') {
+    print('Using local storage due to override');
+    return createReaderForFile(getDefaultPathForDay(day));
   }
 
-  factory InputReader.forDay(int day) {
-    return _RemoteReader(day);
-  }
-}
-
-final class _FileReader implements InputReader {
-  final File path;
-
-  _FileReader(this.path);
-
-  @override
-  Stream<String> readLines() async* {
-    if (!path.existsSync()) {
-      throw FileSystemException('Input file not found', path.path);
-    }
-
-    for (final line in path.readAsLinesSync()) {
-      yield line;
-    }
-  }
-}
-
-final class _RemoteReader implements InputReader {
-  final StorageClient _client;
-  final int day;
-
-  _RemoteReader(this.day) : _client = StorageClient.fromEnv();
-
-  @override
-  Stream<String> readLines() async* {
-    final encoded = _client.readBytes('${_padDay(day)}.txt');
-    final decoder = Utf8Decoder();
-    final decoded = decoder.bind(encoded);
-    final buffer = StringBuffer();
-    await for (var string in decoded) {
-      int newlineIndex = 0;
-      while ((newlineIndex = string.indexOf('\n')) > -1) {
-        buffer.write(string.substring(0, newlineIndex));
-        yield buffer.toString();
-        buffer.clear();
-        string = string.substring(newlineIndex + 1);
-      }
-
-      buffer.write(string);
-    }
-  }
-}
-
-String _padDay(int day) {
-  return day.toString().padLeft(2, '0');
+  return remote.createReader(env, day);
 }
 
 File getDefaultPathForDay(int day) {
-  final filename = '${_padDay(day)}.txt';
+  final filename = '${padDay(day)}.txt';
   return File('inputs/$filename');
 }

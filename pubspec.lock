@@ -365,7 +365,7 @@ packages:
     source: hosted
     version: "2.0.0"
   minio:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: minio
       sha256: "9fa3d041237d3a0dabfd14c11f6adbefe71f6973d64192f6f1fc3e174013001e"

@@ -1,9 +1,12 @@
 import 'dart:io';
 
-import 'package:aoc/src/storage.dart';
+import 'package:aoc/src/input/remote_client.dart';
+import 'package:dotenv/dotenv.dart';
 
 Future<void> main(List<String> args) async {
-  final client = StorageClient.fromEnv();
+  final client = RemoteClient.fromEnv(
+    DotEnv(includePlatformEnvironment: true)..load(),
+  );
   final dir = Directory('inputs');
 
   if (args.firstOrNull == 'download') {
@@ -13,7 +16,7 @@ Future<void> main(List<String> args) async {
   }
 }
 
-Future<void> _download(StorageClient client, Directory dir) async {
+Future<void> _download(RemoteClient client, Directory dir) async {
   if (!dir.existsSync()) {
     dir.createSync();
   }
@@ -31,7 +34,7 @@ Future<void> _download(StorageClient client, Directory dir) async {
   }
 }
 
-Future<void> _upload(StorageClient client, Directory dir) async {
+Future<void> _upload(RemoteClient client, Directory dir) async {
   if (!dir.existsSync()) {
     print('inputs dir does not exist');
     exit(1);
