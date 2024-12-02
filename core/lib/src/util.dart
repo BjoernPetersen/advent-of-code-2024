@@ -10,6 +10,27 @@ extension CharIterable on String {
   }
 }
 
+extension StreamUtils<T> on Stream<T>{
+  Future<int> get count => fold(0, (previous, _) => previous + 1);
+}
+
+extension IterableUtils<T> on Iterable<T>{
+  int get count => fold(0, (previous, _) => previous + 1);
+
+  Iterable<(T, T)> zipWithNext() sync* {
+    final iterator = this.iterator;
+    if(!iterator.moveNext()) {
+      return;
+    }
+    var last = iterator.current;
+
+    while(iterator.moveNext()) {
+      yield (last, iterator.current);
+      last = iterator.current;
+    }
+  }
+}
+
 @immutable
 class Vector {
   static const Vector zero = Vector();
