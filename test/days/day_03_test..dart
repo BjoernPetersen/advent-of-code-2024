@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import '../input_helper.dart';
 
 void main() {
-  final dayNum = %N;
+  final dayNum = 3;
   final day = getDay(dayNum);
 
   group('day $dayNum', () {
@@ -12,7 +12,7 @@ void main() {
       final part = day.partOne as IntPart;
 
       for (final (example, expectedResult) in [
-        ('instructions-1', 0),
+        ('instructions-1', 161),
       ]) {
         test('example $example passes', () {
           final reader = getExampleReader(dayNum, example);
@@ -25,7 +25,7 @@ void main() {
 
       test('input passes', () {
         final reader = getInputReader(dayNum);
-        expect(part.calculate(reader.readLines()), completion(0));
+        expect(part.calculate(reader.readLines()), completion(180233229));
       });
     });
     group(

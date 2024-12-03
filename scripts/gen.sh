@@ -12,5 +12,5 @@ for FILE in $(find lib test -type f -name "*.template")
 do
   TARGET_FILE="${FILE%template}.dart"
   TARGET_FILE="${TARGET_FILE/N/$N}"
-  sed "s/%N/2/g" "$FILE" > "$TARGET_FILE"
+  sed "s/%N/$N/g" "$FILE" > "$TARGET_FILE"
 done
