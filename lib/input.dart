@@ -9,8 +9,13 @@ import 'package:dotenv/dotenv.dart';
 export 'package:aoc/src/input/input_reader.dart';
 
 InputReader createReaderForFile(File path) => local.createReader(path);
+
 InputReader createReaderForDay(int day) {
-  final env = DotEnv(includePlatformEnvironment: true)..load();
+  final env = DotEnv(
+    includePlatformEnvironment: true,
+    quiet: true,
+  )..load();
+
   if (env['USE_LOCAL_STORAGE'] == 'true') {
     print('Using local storage due to override');
     return createReaderForFile(getDefaultPathForDay(day));
