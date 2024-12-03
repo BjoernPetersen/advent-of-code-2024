@@ -38,7 +38,7 @@ void main() {
         });
 
         for (final (example, expectedResult) in [
-          ('instructions-1', 0),
+          ('instructions-2', 48),
         ]) {
           test('example $example passes', () {
             final reader = getExampleReader(dayNum, example);
@@ -51,10 +51,10 @@ void main() {
 
         test('input passes', () {
           final reader = getInputReader(dayNum);
-          expect(part.calculate(reader.readLines()), completion(0));
+          expect(part.calculate(reader.readLines()), completion(95411583));
         });
       },
-      skip: true,
+      skip: false,
     );
   });
 }
