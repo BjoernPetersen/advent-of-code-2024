@@ -92,6 +92,10 @@ class Vector {
     return clockwise ? Vector(x: -y, y: x) : Vector(x: y, y: -x);
   }
 
+  Vector operator -() {
+    return Vector(x: -x, y: -y);
+  }
+
   Vector abs() {
     return Vector(
       x: x.abs(),

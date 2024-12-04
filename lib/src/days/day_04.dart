@@ -91,3 +91,40 @@ final class PartOne extends IntPart {
     return matches.sum;
   }
 }
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  bool _isMas(
+    Grid<String> grid, {
+    required Vector aPoint,
+    required Vector direction,
+  }) {
+    final letters = {grid[aPoint + direction], grid[aPoint - direction]};
+    return const DeepCollectionEquality().equals(letters, const {'M', 'S'});
+  }
+
+  bool _isXmas(Grid<String> grid, Vector aPoint) {
+    final direction = Vector(x: 1, y: 1);
+    return _isMas(grid, aPoint: aPoint, direction: direction) &&
+        _isMas(grid, aPoint: aPoint, direction: direction.rotate());
+  }
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    final grid = await _buildGrid(input);
+    var sum = 0;
+    for (var y = 1; y < grid.height - 1; ++y) {
+      for (var x = 1; x < grid.width - 1; ++x) {
+        final point = Vector(x: x, y: y);
+        if (grid[point] == 'A') {
+          if (_isXmas(grid, point)) {
+            sum += 1;
+          }
+        }
+      }
+    }
+    return sum;
+  }
+}
