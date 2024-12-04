@@ -54,7 +54,7 @@ void main() {
           expect(part.calculate(reader.readLines()), completion(0));
         });
       },
-      skip: true,
+      skip: day.partTwo == null,
     );
   });
 }
