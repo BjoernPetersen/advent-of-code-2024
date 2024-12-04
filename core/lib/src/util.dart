@@ -178,6 +178,14 @@ class Grid<T> {
     }
   }
 
+  Iterable<Vector> get positions sync* {
+    for (var y = 0; y < height; ++y) {
+      for (var x = 0; x < width; ++x) {
+        yield Vector(x: x, y: y);
+      }
+    }
+  }
+
   @override
   String toString() {
     return rows.map((row) => row.map((e) => e.toString()).join()).join('\n');
