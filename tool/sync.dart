@@ -21,17 +21,21 @@ Future<void> _download(RemoteClient client, Directory dir) async {
     dir.createSync();
   }
 
-  await for (final objectName in client.listObjects()) {
-    final file = File('${dir.path}/$objectName');
-    final handle = await file.open(mode: FileMode.writeOnly);
-    try {
-      await for (final bytes in client.readBytes(objectName)) {
-        await handle.writeFrom(bytes);
+  final tasks = await client.listObjects().map<Future<void>>(
+    (objectName) async {
+      final file = File('${dir.path}/$objectName');
+      print('Writing to ${file.path}');
+      final handle = await file.open(mode: FileMode.writeOnly);
+      try {
+        await for (final bytes in client.readBytes(objectName)) {
+          await handle.writeFrom(bytes);
+        }
+      } finally {
+        await handle.close();
       }
-    } finally {
-      await handle.close();
-    }
-  }
+    },
+  ).toList();
+  await Future.wait(tasks);
 }
 
 Future<void> _upload(RemoteClient client, Directory dir) async {
