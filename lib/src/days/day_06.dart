@@ -103,9 +103,14 @@ final class PartTwo extends IntPart {
   Future<int> calculate(Stream<String> input) async {
     final (grid, start) = await _readInput(input);
 
+    // normal walk to identity candidates
+    final walkedGrid = grid.clone();
+    _walkGrid(walkedGrid, start);
+
     var count = 0;
     // pro-gamer move
-    for (final newObstruction in grid.squares
+    for (final newObstruction in walkedGrid.squares
+        .where((l) => l.isVisited)
         .whereNot((l) => l.isObstruction || l.position == start)) {
       final candidate = grid.clone();
       candidate.update(newObstruction.position, (l) => l.withObstruction());
