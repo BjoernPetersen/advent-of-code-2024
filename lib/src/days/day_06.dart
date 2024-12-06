@@ -103,7 +103,7 @@ final class PartTwo extends IntPart {
   Future<int> calculate(Stream<String> input) async {
     final (grid, start) = await _readInput(input);
 
-    // normal walk to identity candidates
+    // normal walk to identify candidates
     final walkedGrid = grid.clone();
     _walkGrid(walkedGrid, start);
 
