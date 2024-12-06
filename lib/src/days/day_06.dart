@@ -1,42 +1,42 @@
 import 'package:aoc_core/aoc_core.dart';
 
-final class Location {
+final class Square {
   final Vector position;
   final bool isObstruction;
   final bool isVisited;
 
-  Location._({
+  Square._({
     required this.position,
     required this.isObstruction,
     required this.isVisited,
   });
 
-  factory Location({
+  factory Square({
     required Vector position,
     required bool isObstruction,
   }) {
-    return Location._(
+    return Square._(
       position: position,
       isObstruction: isObstruction,
       isVisited: false,
     );
   }
 
-  Location withObstruction() {
+  Square withObstruction() {
     if (isVisited) {
       throw StateError('Was already visited');
     }
-    return Location(
+    return Square(
       position: position,
       isObstruction: true,
     );
   }
 
-  Location visit() {
+  Square visit() {
     if (isObstruction) {
       throw StateError("Can't be visited");
     }
-    return Location._(
+    return Square._(
       position: position,
       isObstruction: isObstruction,
       isVisited: true,
@@ -44,14 +44,14 @@ final class Location {
   }
 }
 
-Future<(Grid<Location>, Vector)> _readInput(Stream<String> input) async {
-  final rows = <List<Location>>[];
+Future<(Grid<Square>, Vector)> _readInput(Stream<String> input) async {
+  final rows = <List<Square>>[];
   late final Vector startingPoint;
   await for (final line in input) {
-    final row = <Location>[];
+    final row = <Square>[];
     for (final (x, char) in line.chars.indexed) {
       final position = Vector(x: x, y: rows.length);
-      row.add(Location(
+      row.add(Square(
         position: position,
         isObstruction: char == '#',
       ));
@@ -78,7 +78,7 @@ final class PartOne extends IntPart {
     return grid.squares.where((l) => l.isVisited).count;
   }
 
-  void _walkGrid(Grid<Location> grid, Vector start) {
+  void _walkGrid(Grid<Square> grid, Vector start) {
     var position = start;
     var direction = Vector.north;
     while (grid.contains(position)) {
@@ -122,7 +122,7 @@ final class PartTwo extends IntPart {
     return count;
   }
 
-  bool _walkGrid(Grid<Location> grid, Vector start,
+  bool _walkGrid(Grid<Square> grid, Vector start,
       {bool markVisitedSquares = false}) {
     var position = start;
     var direction = Vector.north;
