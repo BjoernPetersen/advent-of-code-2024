@@ -105,24 +105,25 @@ final class PartTwo extends IntPart {
 
     // normal walk to identify candidates
     final walkedGrid = grid.clone();
-    _walkGrid(walkedGrid, start);
+    _walkGrid(walkedGrid, start, markVisitedSquares: true);
 
     var count = 0;
     // pro-gamer move
-    for (final newObstruction in walkedGrid.squares
+    for (final candidate in walkedGrid.squares
         .where((l) => l.isVisited)
         .whereNot((l) => l.isObstruction || l.position == start)) {
-      final candidate = grid.clone();
-      candidate.update(newObstruction.position, (l) => l.withObstruction());
-      if (!_walkGrid(candidate, start)) {
+      grid.update(candidate.position, (l) => l.withObstruction());
+      if (!_walkGrid(grid, start)) {
         count += 1;
       }
+      grid[candidate.position] = candidate;
     }
 
     return count;
   }
 
-  bool _walkGrid(Grid<Location> grid, Vector start) {
+  bool _walkGrid(Grid<Location> grid, Vector start,
+      {bool markVisitedSquares = false}) {
     var position = start;
     var direction = Vector.north;
     final seen = <(Vector, Vector)>{};
@@ -132,7 +133,9 @@ final class PartTwo extends IntPart {
         return false;
       }
 
-      grid.update(position, (l) => l.visit());
+      if (markVisitedSquares) {
+        grid.update(position, (s) => s.visit());
+      }
 
       Vector nextPosition;
       while (grid.contains(nextPosition = position + direction) &&
