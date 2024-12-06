@@ -148,7 +148,9 @@ jobs:
     needs:
       - build-frontend
     concurrency: production
-    environment: Production
+    environment:
+      name: Production
+      url: https://aoc.bjoernpetersen.net/2024/
     container: rclone/rclone:1.68
     steps:
       - uses: actions/download-artifact@v4
