@@ -1,0 +1,6 @@
+[tools]
+flutter = "3.24"
+
+[settings]
+asdf = true
+vfox = false

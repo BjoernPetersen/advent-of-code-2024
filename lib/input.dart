@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:aoc/src/input/input_reader.dart';
 import 'package:aoc/src/input/local.dart' as local;
+import 'package:aoc/src/input/bytes.dart' as bytes_reader;
 import 'package:aoc/src/input/remote.dart' as remote;
 import 'package:aoc/src/input/util.dart';
 import 'package:dotenv/dotenv.dart';
@@ -22,6 +23,10 @@ InputReader createReaderForDay(int day) {
   }
 
   return remote.createReader(env, day);
+}
+
+InputReader createRawBytesReader(Stream<List<int>> bytes) {
+  return bytes_reader.createReader(bytes);
 }
 
 File getDefaultPathForDay(int day) {
