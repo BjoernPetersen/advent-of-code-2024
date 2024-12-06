@@ -186,6 +186,12 @@ class Grid<T> {
     }
   }
 
+  Iterable<T> get squares sync* {
+    for (final position in positions) {
+      yield this[position];
+    }
+  }
+
   @override
   String toString() {
     return rows.map((row) => row.map((e) => e.toString()).join()).join('\n');
