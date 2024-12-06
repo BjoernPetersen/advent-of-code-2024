@@ -17,6 +17,24 @@ extension StreamUtils<T> on Stream<T> {
 extension IterableUtils<T> on Iterable<T> {
   int get count => fold(0, (previous, _) => previous + 1);
 
+  Iterable<R> combined<U, R>(
+    Iterable<U> other,
+    R Function(T, U) combine,
+  ) sync* {
+    final otherIterator = other.iterator;
+    for (final element in this) {
+      if (!otherIterator.moveNext()) {
+        throw ArgumentError('other iterable was shorter');
+      }
+
+      yield combine(element, otherIterator.current);
+    }
+
+    if (otherIterator.moveNext()) {
+      throw ArgumentError('other iterable was longer');
+    }
+  }
+
   Iterable<(T, T)> zipWithNext() sync* {
     final iterator = this.iterator;
     if (!iterator.moveNext()) {

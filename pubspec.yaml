@@ -16,10 +16,12 @@ dependencies:
   memoized: ^2.0.0
   meta: ^1.0.0
   minio: ^3.5.7
+  squadron: ^6.0.0
 
 dev_dependencies:
   build_runner: ^2.4.0
   day_builder:
     path: day_builder
   lints: ^5.0.0
+  squadron_builder: ^6.0.0
   test: ^1.0.0
