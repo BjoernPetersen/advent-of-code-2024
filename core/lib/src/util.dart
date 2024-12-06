@@ -158,9 +158,21 @@ class Grid<T> {
           growable: false,
         );
 
+  Grid<T> clone() {
+    return Grid(
+      rows.map((e) => e.toList(growable: false)).toList(growable: false),
+    );
+  }
+
   T operator [](Vector pos) => _grid[pos.y][pos.x];
 
   void operator []=(Vector pos, T value) => _grid[pos.y][pos.x] = value;
+
+  T update(Vector pos, T Function(T) compute) {
+    final value = compute(this[pos]);
+    this[pos] = value;
+    return value;
+  }
 
   bool contains(Vector pos) {
     return pos.x >= 0 && pos.y >= 0 && pos.x < width && pos.y < height;

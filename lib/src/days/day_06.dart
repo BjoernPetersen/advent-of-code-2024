@@ -3,12 +3,45 @@ import 'package:aoc_core/aoc_core.dart';
 final class Location {
   final Vector position;
   final bool isObstruction;
-  bool isVisited = false;
+  final bool isVisited;
 
-  Location({
+  Location._({
     required this.position,
     required this.isObstruction,
+    required this.isVisited,
   });
+
+  factory Location({
+    required Vector position,
+    required bool isObstruction,
+  }) {
+    return Location._(
+      position: position,
+      isObstruction: isObstruction,
+      isVisited: false,
+    );
+  }
+
+  Location withObstruction() {
+    if (isVisited) {
+      throw StateError('Was already visited');
+    }
+    return Location(
+      position: position,
+      isObstruction: true,
+    );
+  }
+
+  Location visit() {
+    if (isObstruction) {
+      throw StateError("Can't be visited");
+    }
+    return Location._(
+      position: position,
+      isObstruction: isObstruction,
+      isVisited: true,
+    );
+  }
 }
 
 Future<(Grid<Location>, Vector)> _readInput(Stream<String> input) async {
@@ -49,8 +82,7 @@ final class PartOne extends IntPart {
     var position = start;
     var direction = Vector.north;
     while (grid.contains(position)) {
-      final location = grid[position];
-      location.isVisited = true;
+      grid.update(position, (l) => l.visit());
 
       Vector nextPosition;
       while (grid.contains(nextPosition = position + direction) &&
@@ -60,5 +92,52 @@ final class PartOne extends IntPart {
 
       position = nextPosition;
     }
+  }
+}
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    final (grid, start) = await _readInput(input);
+
+    var count = 0;
+    // pro-gamer move
+    for (final newObstruction in grid.squares
+        .whereNot((l) => l.isObstruction || l.position == start)) {
+      final candidate = grid.clone();
+      candidate.update(newObstruction.position, (l) => l.withObstruction());
+      if (!_walkGrid(candidate, start)) {
+        count += 1;
+      }
+    }
+
+    return count;
+  }
+
+  bool _walkGrid(Grid<Location> grid, Vector start) {
+    var position = start;
+    var direction = Vector.north;
+    final seen = <(Vector, Vector)>{};
+    while (grid.contains(position)) {
+      if (!seen.add((position, direction))) {
+        // loop detected
+        return false;
+      }
+
+      grid.update(position, (l) => l.visit());
+
+      Vector nextPosition;
+      while (grid.contains(nextPosition = position + direction) &&
+          grid[nextPosition].isObstruction) {
+        direction = direction.rotate(clockwise: true);
+      }
+
+      position = nextPosition;
+    }
+
+    return true;
   }
 }
