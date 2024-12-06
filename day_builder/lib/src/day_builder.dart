@@ -131,6 +131,15 @@ final class DayBuilder implements Builder {
 
     buffer.writeln();
 
+    // availableDays constant
+    buffer.write('const availableDays = <int>[');
+    for (final day in dayDeclarations) {
+      buffer.write(day.day);
+      buffer.write(',');
+    }
+    buffer.writeln('];');
+    buffer.writeln();
+
     // getDay implementation
     buffer.writeln('Day<Part, Part> getDay(int day) {');
     buffer.writeln('return switch (day) {');
@@ -197,6 +206,8 @@ final class DayBuilder implements Builder {
         ));
       }
     }
+
+    dayDeclarations.sort((a, b) => a.day.compareTo(b.day));
 
     final inputLib = await buildStep.inputLibrary;
     final target = buildStep.inputId.changeExtension('.g.dart');

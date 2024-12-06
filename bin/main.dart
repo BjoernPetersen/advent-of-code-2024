@@ -11,7 +11,7 @@ Future<void> main(List<String> args) async {
     'day',
     abbr: 'd',
     mandatory: true,
-    allowed: List.generate(25, (day) => (day + 1).toString()),
+    allowed: availableDays.map((e) => e.toString()),
   );
   parser.addOption(
     'part',
