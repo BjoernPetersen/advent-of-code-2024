@@ -60,7 +60,6 @@ final class DayBuilder implements Builder {
     } else if (supertype.element == supertypes.stringPart.element) {
       isStringInput = true;
     } else {
-      print('Is neither string nor int part');
       return null;
     }
 
