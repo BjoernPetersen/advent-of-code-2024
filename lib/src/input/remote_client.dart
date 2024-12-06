@@ -33,7 +33,7 @@ final class RemoteClient {
     final endpoint = _readEnv(env, 'S3_ENDPOINT');
     final accessKey = _readEnv(env, 'S3_ACCESS_KEY_ID');
     final secretKey = _readEnv(env, 'S3_SECRET_ACCESS_KEY');
-    final bucketName = _readEnv(env, 'S3_BUCKET_NAME');
+    final bucketName = _readEnv(env, 'S3_INPUT_BUCKET_NAME');
 
     final endpointHost = Uri.parse(endpoint).host;
 

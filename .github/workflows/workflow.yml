@@ -24,7 +24,7 @@ jobs:
         run: dart test --file-reporter json:test-results.json --coverage=.coverage
         env:
           S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
-          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          S3_INPUT_BUCKET_NAME: ${{ secrets.S3_INPUT_BUCKET_NAME }}
           S3_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
       - name: Install coverage package
