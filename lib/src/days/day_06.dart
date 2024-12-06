@@ -1,8 +1,71 @@
-import 'dart:io';
-
-import 'package:aoc/src/days/solver_day_6.dart';
 import 'package:aoc_core/aoc_core.dart';
-import 'package:squadron/squadron.dart';
+
+final class Location {
+  final Vector position;
+  final bool isObstruction;
+  final bool isVisited;
+
+  Location._({
+    required this.position,
+    required this.isObstruction,
+    required this.isVisited,
+  });
+
+  factory Location({
+    required Vector position,
+    required bool isObstruction,
+  }) {
+    return Location._(
+      position: position,
+      isObstruction: isObstruction,
+      isVisited: false,
+    );
+  }
+
+  Location withObstruction() {
+    if (isVisited) {
+      throw StateError('Was already visited');
+    }
+    return Location(
+      position: position,
+      isObstruction: true,
+    );
+  }
+
+  Location visit() {
+    if (isObstruction) {
+      throw StateError("Can't be visited");
+    }
+    return Location._(
+      position: position,
+      isObstruction: isObstruction,
+      isVisited: true,
+    );
+  }
+}
+
+Future<(Grid<Location>, Vector)> _readInput(Stream<String> input) async {
+  final rows = <List<Location>>[];
+  late final Vector startingPoint;
+  await for (final line in input) {
+    final row = <Location>[];
+    for (final (x, char) in line.chars.indexed) {
+      final position = Vector(x: x, y: rows.length);
+      row.add(Location(
+        position: position,
+        isObstruction: char == '#',
+      ));
+
+      if (char == '^') {
+        startingPoint = position;
+      }
+    }
+
+    rows.add(row);
+  }
+
+  return (Grid(rows), startingPoint);
+}
 
 @immutable
 final class PartOne extends IntPart {
@@ -10,7 +73,7 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final (grid, start) = await readInput(input);
+    final (grid, start) = await _readInput(input);
     _walkGrid(grid, start);
     return grid.squares.where((l) => l.isVisited).count;
   }
@@ -38,39 +101,48 @@ final class PartTwo extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final fullInput = await input.toList();
-    final (grid, start) = await readInput(Stream.fromIterable(fullInput));
+    final (grid, start) = await _readInput(input);
 
     // normal walk to identity candidates
-    walkGrid(grid, start);
+    final walkedGrid = grid.clone();
+    _walkGrid(walkedGrid, start);
 
-    final workerPool = SolverWorkerPool(
-      concurrencySettings: ConcurrencySettings(
-        minWorkers: 2,
-        maxWorkers: Platform.numberOfProcessors,
-        // This is per worker
-        maxParallel: 1,
-      ),
-    );
-
-    workerPool.registerWorkerPoolListener((worker, removed) {
-      if (!removed) {
-        worker.initialize(fullInput);
+    var count = 0;
+    // pro-gamer move
+    for (final newObstruction in walkedGrid.squares
+        .where((l) => l.isVisited)
+        .whereNot((l) => l.isObstruction || l.position == start)) {
+      final candidate = grid.clone();
+      candidate.update(newObstruction.position, (l) => l.withObstruction());
+      if (!_walkGrid(candidate, start)) {
+        count += 1;
       }
-    });
-
-    try {
-      final tasks = <Future<bool>>[];
-      for (final newObstruction in grid.squares
-          .where((l) => l.isVisited)
-          .whereNot((l) => l.isObstruction || l.position == start)) {
-        final task = workerPool.solve(newObstruction.position);
-        tasks.add(task);
-      }
-
-      return (await Future.wait(tasks)).where((b) => b).count;
-    } finally {
-      workerPool.release();
     }
+
+    return count;
+  }
+
+  bool _walkGrid(Grid<Location> grid, Vector start) {
+    var position = start;
+    var direction = Vector.north;
+    final seen = <(Vector, Vector)>{};
+    while (grid.contains(position)) {
+      if (!seen.add((position, direction))) {
+        // loop detected
+        return false;
+      }
+
+      grid.update(position, (l) => l.visit());
+
+      Vector nextPosition;
+      while (grid.contains(nextPosition = position + direction) &&
+          grid[nextPosition].isObstruction) {
+        direction = direction.rotate(clockwise: true);
+      }
+
+      position = nextPosition;
+    }
+
+    return true;
   }
 }
