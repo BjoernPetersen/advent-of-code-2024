@@ -182,13 +182,14 @@ final class DayBuilder implements Builder {
       } on SyntaxErrorInAssetException {
         print('Found syntax error in asset $dayAsset');
         continue;
+      } on NonLibraryAssetException {
+        continue;
       }
 
       final dayString =
           dayAsset.pathSegments.last.split('.')[0].split('_').last;
       final day = int.tryParse(dayString);
       if (day == null) {
-        print('Could not determine day of asset $dayAsset');
         continue;
       }
 

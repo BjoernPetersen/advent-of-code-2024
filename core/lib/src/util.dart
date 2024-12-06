@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:meta/meta.dart';
@@ -226,4 +227,13 @@ class Grid<T> {
   String toString() {
     return rows.map((row) => row.map((e) => e.toString()).join()).join('\n');
   }
+}
+
+const bool kIsWeb = bool.fromEnvironment('dart.library.js_util');
+
+int get availableProcessors {
+  if (kIsWeb) {
+    throw StateError("Can't multithread on web");
+  }
+  return Platform.numberOfProcessors;
 }

@@ -50,26 +50,19 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        dir:
-          - .
-          - core
-          - day_builder
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+      - name: Remove frontend overrides
+        # dart analyzer will just ignore our exclude for the frontend otherwise
+        run: rm frontend/analysis_options.yaml
       - uses: jdx/mise-action@v2
       - name: Get dependencies
         run: dart pub get --enforce-lockfile
-        working-directory: ${{ matrix.dir }}
       - name: Generate code
         run: dart run build_runner build
-        if: matrix.dir == '.'
-        working-directory: ${{ matrix.dir }}
       - name: Run Analysis
         run: dart analyze --fatal-infos
-        working-directory: ${{ matrix.dir }}
 
   build:
     name: Build Binary
@@ -111,10 +104,67 @@ jobs:
           name: binary-${{ matrix.id }}
           path: output/*
 
-  build-result:
-    name: Binaries Built
+  build-frontend:
     runs-on: ubuntu-24.04
     needs:
+      - test
+      - lint
+      - check-format
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - run: |
+          dart pub get
+          dart run build_runner build
+      - uses: jdx/mise-action@v2
+        with:
+          cache: false
+          working_directory: frontend
+      - name: Get dependencies
+        working-directory: frontend
+        run: flutter pub get
+      - name: Build web package
+        working-directory: frontend
+        run: flutter build web
+      - name: Store build result
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-app
+          path: frontend/build/web
+
+  build-result:
+    runs-on: ubuntu-24.04
+    name: All Build Finished
+    needs:
       - build
+      - build-frontend
     steps:
       - run: echo "Builds were successful"
+
+  deploy-frontend:
+    runs-on: ubuntu-24.04
+    if: github.ref_name == github.event.repository.default_branch
+    needs:
+      - build-frontend
+    concurrency: production
+    environment: Production
+    container: rclone/rclone:1.68
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: web-app
+      - name: Save rclone config
+        env:
+          CONFIG: |
+            [r2]
+            type = s3
+            provider = Cloudflare
+            access_key_id = ${{ secrets.S3_ACCESS_KEY_ID }}
+            secret_access_key = ${{ secrets.S3_SECRET_ACCESS_KEY }}
+            endpoint = ${{ secrets.S3_ENDPOINT }}
+        run: |
+          mkdir -p /config/rclone
+          echo "$CONFIG" > /config/rclone/rclone.conf
+      - name: Copy web package to bucket
+        run: rclone sync "$PWD" "r2:${{ secrets.S3_PUBLIC_BUCKET_NAME }}/"
