@@ -1,11 +1,12 @@
 import 'package:aoc_core/aoc_core.dart';
 
+@immutable
 final class Square {
   final Vector position;
   final bool isObstruction;
   final bool isVisited;
 
-  Square._({
+  const Square._({
     required this.position,
     required this.isObstruction,
     required this.isVisited,
@@ -122,8 +123,11 @@ final class PartTwo extends IntPart {
     return count;
   }
 
-  bool _walkGrid(Grid<Square> grid, Vector start,
-      {bool markVisitedSquares = false}) {
+  bool _walkGrid(
+    Grid<Square> grid,
+    Vector start, {
+    bool markVisitedSquares = false,
+  }) {
     var position = start;
     var direction = Vector.north;
     final seen = <(Vector, Vector)>{};
