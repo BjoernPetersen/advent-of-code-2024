@@ -38,7 +38,7 @@ void main() {
         });
 
         for (final (example, expectedResult) in [
-          ('instructions-1', 0),
+          ('instructions-1', 11387),
         ]) {
           test('example $example passes', () {
             final reader = getExampleReader(dayNum, example);
