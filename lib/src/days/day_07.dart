@@ -95,7 +95,7 @@ final class PartTwo extends IntPart {
     final operators = <Operator>[
       (int a, int b) => a * b,
       (int a, int b) => a + b,
-      (int a, int b) => a * pow(10, (log(b) / log10).floor() + 1).round() + b,
+      (int a, int b) => a * pow(10, (log(b + 1) / log10).ceil()).round() + b,
     ];
     await for (final line in input) {
       final (testValue, operands) = _parseInputLine(line);
