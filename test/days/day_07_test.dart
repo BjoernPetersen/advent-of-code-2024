@@ -51,7 +51,10 @@ void main() {
 
         test('input passes', () {
           final reader = getInputReader(dayNum);
-          expect(part.calculate(reader.readLines()), completion(169122112716571));
+          expect(
+            part.calculate(reader.readLines()),
+            completion(169122112716571),
+          );
         });
       },
       skip: day.partTwo == null,
