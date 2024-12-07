@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:aoc_core/aoc_core.dart';
 
 typedef Operator = int Function(int, int);
@@ -87,11 +89,13 @@ final class PartTwo extends IntPart {
   @override
   Future<int> calculate(Stream<String> input) async {
     var sum = 0;
-    final operators = [
+
+    // Saving to avoid re-computation
+    final log10 = log(10);
+    final operators = <Operator>[
       (int a, int b) => a * b,
       (int a, int b) => a + b,
-      // Not particularly efficient, but good enough
-      (int a, int b) => int.parse('$a$b'),
+      (int a, int b) => a * pow(10, (log(b) / log10).floor() + 1).round() + b,
     ];
     await for (final line in input) {
       final (testValue, operands) = _parseInputLine(line);
