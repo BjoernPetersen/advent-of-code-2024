@@ -8,4 +8,4 @@ watch:
 
 .PHONY: format
 format:
-	dart format bin lib test tool core/lib day_builder/lib
+	dart format bin lib test tool core/lib core/test day_builder/lib
