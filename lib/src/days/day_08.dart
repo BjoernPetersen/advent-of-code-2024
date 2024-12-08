@@ -2,17 +2,15 @@ import 'package:aoc_core/aoc_core.dart';
 
 final class Field {
   final String? antenna;
-  final List<String> _antinodes;
+  bool _hasAntinode;
 
-  Field({required this.antenna}) : _antinodes = [];
+  Field({required this.antenna}) : _hasAntinode = false;
 
-  void addAntinode(String frequency) {
-    if (!_antinodes.contains(frequency)) {
-      _antinodes.add(frequency);
-    }
+  void addAntinode() {
+    _hasAntinode = true;
   }
 
-  bool get hasAntinode => _antinodes.isNotEmpty;
+  bool get hasAntinode => _hasAntinode;
 }
 
 extension Pairs<T> on List<T> {
@@ -34,8 +32,8 @@ final class PartOne extends IntPart {
   Future<int> calculate(Stream<String> input) async {
     final (grid, antennaPositions) = await _parseGrid(input);
 
-    for (final entry in antennaPositions.entries) {
-      addAntinodes(grid, entry.key, entry.value);
+    for (final positions in antennaPositions.values) {
+      addAntinodes(grid, positions);
     }
 
     return grid.squares.where((f) => f.hasAntinode).count;
@@ -43,7 +41,6 @@ final class PartOne extends IntPart {
 
   void addAntinodes(
     Grid<Field> grid,
-    String frequency,
     List<Vector> antennaPositions,
   ) {
     for (final (antennaA, antennaB) in antennaPositions.pairings) {
@@ -51,7 +48,7 @@ final class PartOne extends IntPart {
       for (final offset in [-distance, distance * 2]) {
         final antinode = antennaA + offset;
         if (grid.contains(antinode)) {
-          grid[antinode].addAntinode(frequency);
+          grid[antinode].addAntinode();
         }
       }
     }
@@ -66,8 +63,8 @@ final class PartTwo extends IntPart {
   Future<int> calculate(Stream<String> input) async {
     final (grid, antennaPositions) = await _parseGrid(input);
 
-    for (final entry in antennaPositions.entries) {
-      addAntinodes(grid, entry.key, entry.value);
+    for (final positions in antennaPositions.values) {
+      addAntinodes(grid, positions);
     }
 
     return grid.squares.where((f) => f.hasAntinode).count;
@@ -75,7 +72,6 @@ final class PartTwo extends IntPart {
 
   void addAntinodes(
     Grid<Field> grid,
-    String frequency,
     List<Vector> antennaPositions,
   ) {
     for (final (antennaA, antennaB) in antennaPositions.pairings) {
@@ -84,7 +80,7 @@ final class PartTwo extends IntPart {
       for (final direction in [distance, -distance]) {
         Vector position = antennaA;
         while (grid.contains(position)) {
-          grid[position].addAntinode(frequency);
+          grid[position].addAntinode();
           position += direction;
         }
       }
@@ -93,7 +89,8 @@ final class PartTwo extends IntPart {
 }
 
 Future<(Grid<Field>, Map<String, List<Vector>>)> _parseGrid(
-    Stream<String> input) async {
+  Stream<String> input,
+) async {
   final rows = <List<Field>>[];
   final antennaPositions = <String, List<Vector>>{};
   await for (final line in input) {
