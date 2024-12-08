@@ -47,11 +47,9 @@ final class PartOne extends IntPart {
     List<Vector> antennaPositions,
   ) {
     for (final (antennaA, antennaB) in antennaPositions.pairings) {
-      final antinodes = [
-        antennaA - (antennaB - antennaA),
-        antennaB - (antennaA - antennaB),
-      ];
-      for (final antinode in antinodes) {
+      final distance = antennaB - antennaA;
+      for (final offset in [-distance, distance * 2]) {
+        final antinode = antennaA + offset;
         if (grid.contains(antinode)) {
           grid[antinode].addAntinode(frequency);
         }
