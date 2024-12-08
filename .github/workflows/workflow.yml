@@ -20,7 +20,7 @@ jobs:
       - name: Generate code
         run: dart run build_runner build
       - name: Run tests
-        run: dart test --file-reporter json:test-results.json --coverage=.coverage
+        run: dart test --file-reporter json:test-results.json --coverage=.coverage .
         env:
           S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
           S3_INPUT_BUCKET_NAME: ${{ secrets.S3_INPUT_BUCKET_NAME }}
@@ -29,7 +29,7 @@ jobs:
       - name: Install coverage package
         run: dart pub global activate coverage
       - name: Convert to LCOV
-        run: dart pub global run coverage:format_coverage --report-on=lib --lcov -o ./.coverage/lcov.info -i ./.coverage
+        run: dart pub global run coverage:format_coverage --report-on=lib --report-on=core/lib --lcov -o ./.coverage/lcov.info -i ./.coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
       - name: Check formatting
-        run: dart format bin lib test tool day_builder/lib core/lib --set-exit-if-changed
+        run: dart format bin lib test tool day_builder/lib core/lib core/test --set-exit-if-changed
 
   lint:
     name: Lint
