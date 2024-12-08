@@ -8,26 +8,8 @@ final class _BytesReader implements InputReader {
   _BytesReader(this._bytes);
 
   @override
-  Stream<String> readLines() async* {
-    final encoded = _bytes;
-    final decoder = Utf8Decoder();
-    final decoded = decoder.bind(encoded);
-    final buffer = StringBuffer();
-    await for (var string in decoded) {
-      int newlineIndex = 0;
-      while ((newlineIndex = string.indexOf('\n')) > -1) {
-        buffer.write(string.substring(0, newlineIndex));
-        yield buffer.toString();
-        buffer.clear();
-        string = string.substring(newlineIndex + 1);
-      }
-
-      buffer.write(string);
-    }
-
-    if (buffer.isNotEmpty) {
-      yield buffer.toString();
-    }
+  Stream<String> readLines() {
+    return LineSplitter().bind(Utf8Decoder().bind(_bytes));
   }
 }
 
