@@ -6,7 +6,6 @@ on:
 
 jobs:
   required-meta:
-    name: Validate Renovate configuration
     uses: BlindfoldedSurgery/actions-meta/.github/workflows/required.yml@v1
 
   test:
