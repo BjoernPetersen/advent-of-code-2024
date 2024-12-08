@@ -24,6 +24,10 @@ final class _BytesReader implements InputReader {
 
       buffer.write(string);
     }
+
+    if (buffer.isNotEmpty) {
+      yield buffer.toString();
+    }
   }
 }
 
