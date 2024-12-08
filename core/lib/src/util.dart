@@ -169,17 +169,21 @@ final class Bounds {
 
 final class Grid<T> {
   final List<List<T>> _grid;
-  final int width;
+  final Bounds bounds;
 
-  int get height => _grid.length;
+  int get width => bounds.width;
 
-  Grid(this._grid) : width = _grid[0].length;
+  int get height => bounds.height;
+
+  Grid(this._grid)
+      : bounds = Bounds(width: _grid[0].length, height: _grid.length);
 
   Grid.generate({
-    required this.width,
+    required int width,
     required int height,
     required T Function(Vector position) generator,
-  }) : _grid = List.generate(
+  })  : bounds = Bounds(width: width, height: height),
+        _grid = List.generate(
           height,
           (y) => List.generate(
             width,
@@ -205,9 +209,7 @@ final class Grid<T> {
     return value;
   }
 
-  bool contains(Vector pos) {
-    return pos.x >= 0 && pos.y >= 0 && pos.x < width && pos.y < height;
-  }
+  bool contains(Vector pos) => bounds.contains(pos);
 
   Iterable<List<T>> get rows sync* {
     for (final row in _grid) {
