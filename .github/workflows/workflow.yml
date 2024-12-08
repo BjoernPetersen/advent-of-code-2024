@@ -67,7 +67,7 @@ jobs:
   build:
     name: Build Binary
     needs:
-      - validate-renovate-config
+      - required-meta
       - test
       - check-format
       - lint
