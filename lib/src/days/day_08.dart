@@ -60,6 +60,40 @@ final class PartOne extends IntPart {
   }
 }
 
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    final (grid, antennaPositions) = await _parseGrid(input);
+
+    for (final entry in antennaPositions.entries) {
+      addAntinodes(grid, entry.key, entry.value);
+    }
+
+    return grid.squares.where((f) => f.hasAntinode).count;
+  }
+
+  void addAntinodes(
+    Grid<Field> grid,
+    String frequency,
+    List<Vector> antennaPositions,
+  ) {
+    for (final (antennaA, antennaB) in antennaPositions.pairings) {
+      final distance = antennaB - antennaA;
+
+      for (final direction in [distance, -distance]) {
+        Vector position = antennaA;
+        while (grid.contains(position)) {
+          grid[position].addAntinode(frequency);
+          position += direction;
+        }
+      }
+    }
+  }
+}
+
 Future<(Grid<Field>, Map<String, List<Vector>>)> _parseGrid(
     Stream<String> input) async {
   final rows = <List<Field>>[];
