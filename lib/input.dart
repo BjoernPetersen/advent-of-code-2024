@@ -4,6 +4,7 @@ import 'package:aoc/src/input/input_reader.dart';
 import 'package:aoc/src/input/local.dart' as local;
 import 'package:aoc/src/input/bytes.dart' as bytes_reader;
 import 'package:aoc/src/input/remote.dart' as remote;
+import 'package:aoc/src/input/strings.dart' as strings;
 import 'package:aoc/src/input/util.dart';
 import 'package:dotenv/dotenv.dart';
 
@@ -36,3 +37,8 @@ File getDefaultPathForDay(int day, {String suffix = ''}) {
   final filename = '${padDay(day)}$suffix.txt';
   return File('inputs/$filename');
 }
+
+InputReader createStringsReader(
+  List<String> lines,
+) =>
+    strings.createReader(lines);
