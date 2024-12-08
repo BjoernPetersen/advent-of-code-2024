@@ -155,7 +155,19 @@ class Vector {
   }
 }
 
-class Grid<T> {
+@immutable
+final class Bounds {
+  final int width;
+  final int height;
+
+  const Bounds({required this.width, required this.height});
+
+  bool contains(Vector pos) {
+    return pos.x >= 0 && pos.y >= 0 && pos.x < width && pos.y < height;
+  }
+}
+
+final class Grid<T> {
   final List<List<T>> _grid;
   final int width;
 

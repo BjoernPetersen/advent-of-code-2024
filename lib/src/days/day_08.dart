@@ -1,18 +1,5 @@
 import 'package:aoc_core/aoc_core.dart';
 
-final class Field {
-  final String? antenna;
-  bool _hasAntinode;
-
-  Field({required this.antenna}) : _hasAntinode = false;
-
-  void addAntinode() {
-    _hasAntinode = true;
-  }
-
-  bool get hasAntinode => _hasAntinode;
-}
-
 extension Pairs<T> on List<T> {
   Iterable<(T, T)> get pairings sync* {
     for (var leftIndex = 0; leftIndex < length - 1; ++leftIndex) {
@@ -30,25 +17,27 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final (grid, antennaPositions) = await _parseGrid(input);
+    final (bounds, antennaPositions) = await _parseInput(input);
 
+    final antinodes = <Vector>{};
     for (final positions in antennaPositions.values) {
-      addAntinodes(grid, positions);
+      addAntinodes(bounds, antinodes, positions);
     }
 
-    return grid.squares.where((f) => f.hasAntinode).count;
+    return antinodes.length;
   }
 
   void addAntinodes(
-    Grid<Field> grid,
+    Bounds bounds,
+    Set<Vector> antinodes,
     List<Vector> antennaPositions,
   ) {
     for (final (antennaA, antennaB) in antennaPositions.pairings) {
       final distance = antennaB - antennaA;
       for (final offset in [-distance, distance * 2]) {
         final antinode = antennaA + offset;
-        if (grid.contains(antinode)) {
-          grid[antinode].addAntinode();
+        if (bounds.contains(antinode)) {
+          antinodes.add(antinode);
         }
       }
     }
@@ -61,17 +50,19 @@ final class PartTwo extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final (grid, antennaPositions) = await _parseGrid(input);
+    final (bounds, antennaPositions) = await _parseInput(input);
 
+    final antinodes = <Vector>{};
     for (final positions in antennaPositions.values) {
-      addAntinodes(grid, positions);
+      addAntinodes(bounds, antinodes, positions);
     }
 
-    return grid.squares.where((f) => f.hasAntinode).count;
+    return antinodes.length;
   }
 
   void addAntinodes(
-    Grid<Field> grid,
+    Bounds bounds,
+    Set<Vector> antinodes,
     List<Vector> antennaPositions,
   ) {
     for (final (antennaA, antennaB) in antennaPositions.pairings) {
@@ -79,8 +70,8 @@ final class PartTwo extends IntPart {
 
       for (final direction in [distance, -distance]) {
         Vector position = antennaA;
-        while (grid.contains(position)) {
-          grid[position].addAntinode();
+        while (bounds.contains(position)) {
+          antinodes.add(position);
           position += direction;
         }
       }
@@ -88,24 +79,25 @@ final class PartTwo extends IntPart {
   }
 }
 
-Future<(Grid<Field>, Map<String, List<Vector>>)> _parseGrid(
+Future<(Bounds, Map<String, List<Vector>>)> _parseInput(
   Stream<String> input,
 ) async {
-  final rows = <List<Field>>[];
+  var width = 0;
   final antennaPositions = <String, List<Vector>>{};
+
+  var y = 0;
   await for (final line in input) {
-    final row = <Field>[];
-    for (final char in line.chars) {
-      if (char == '.') {
-        row.add(Field(antenna: null));
-      } else {
-        final position = Vector(x: row.length, y: rows.length);
+    width = line.length;
+
+    for (final (x, char) in line.chars.indexed) {
+      if (char != '.') {
+        final position = Vector(x: x, y: y);
         antennaPositions.putIfAbsent(char, () => []).add(position);
-        row.add(Field(antenna: char));
       }
     }
-    rows.add(row);
+
+    y += 1;
   }
 
-  return (Grid(rows), antennaPositions);
+  return (Bounds(width: width, height: y), antennaPositions);
 }
