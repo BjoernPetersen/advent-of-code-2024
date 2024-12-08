@@ -11,7 +11,7 @@ export 'package:aoc/src/input/input_reader.dart';
 
 InputReader createReaderForFile(File path) => local.createReader(path);
 
-InputReader createReaderForDay(int day) {
+InputReader createReaderForDay(int day, {String suffix = ''}) {
   final env = DotEnv(
     includePlatformEnvironment: true,
     quiet: true,
@@ -19,17 +19,20 @@ InputReader createReaderForDay(int day) {
 
   if (env['USE_LOCAL_STORAGE'] == 'true') {
     print('Using local storage due to override');
-    return createReaderForFile(getDefaultPathForDay(day));
+    return createReaderForFile(getDefaultPathForDay(
+      day,
+      suffix: suffix,
+    ));
   }
 
-  return remote.createReader(env, day);
+  return remote.createReader(env, day, suffix: suffix);
 }
 
 InputReader createRawBytesReader(Stream<List<int>> bytes) {
   return bytes_reader.createReader(bytes);
 }
 
-File getDefaultPathForDay(int day) {
-  final filename = '${padDay(day)}.txt';
+File getDefaultPathForDay(int day, {String suffix = ''}) {
+  final filename = '${padDay(day)}$suffix.txt';
   return File('inputs/$filename');
 }

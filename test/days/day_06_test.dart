@@ -53,6 +53,11 @@ void main() {
           final reader = getInputReader(dayNum);
           expect(part.calculate(reader.readLines()), completion(2022));
         });
+
+        test('Sven input passes', () {
+          final reader = getInputReader(dayNum, suffix: '-sven');
+          expect(part.calculate(reader.readLines()), completion(1721));
+        });
       },
       skip: day.partTwo == null,
     );

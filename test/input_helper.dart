@@ -7,6 +7,6 @@ InputReader getExampleReader(int dayNum, String name) {
   return createReaderForFile(file);
 }
 
-InputReader getInputReader(int dayNum) {
-  return createReaderForDay(dayNum);
+InputReader getInputReader(int dayNum, {String suffix = ''}) {
+  return createReaderForDay(dayNum, suffix: suffix);
 }
