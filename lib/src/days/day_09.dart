@@ -8,22 +8,32 @@ int intSum(int a, int b) {
   return sum;
 }
 
+Future<List<int>> _parseInput(Stream<String> input) async {
+  final line = await input.single;
+  return List.generate(
+    line.length,
+    (i) => int.parse(line[i]),
+    growable: false,
+  );
+}
+
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final line = await input.single;
+    final blocks = await _parseInput(input);
 
     var sum = 0;
-    var rightCursor = line.length % 2 == 0 ? line.length : line.length + 1;
+    var rightCursor =
+        blocks.length % 2 == 0 ? blocks.length : blocks.length + 1;
     var rightFileId = 0;
     var rightCursorRemaining = 0;
     var position = 0;
 
     for (var leftCursor = 0; leftCursor < rightCursor; ++leftCursor) {
-      final leftNum = int.parse(line[leftCursor]);
+      final leftNum = blocks[leftCursor];
       final isFree = leftCursor % 2 == 1;
 
       if (isFree) {
@@ -31,7 +41,7 @@ final class PartOne extends IntPart {
           if (rightCursorRemaining == 0) {
             // Skip free storage
             rightCursor -= 2;
-            rightCursorRemaining = int.parse(line[rightCursor]);
+            rightCursorRemaining = blocks[rightCursor];
             rightFileId = rightCursor ~/ 2;
           }
 
@@ -59,15 +69,6 @@ final class PartOne extends IntPart {
 @immutable
 final class PartTwo extends IntPart {
   const PartTwo();
-
-  Future<List<int>> _parseInput(Stream<String> input) async {
-    final line = await input.single;
-    return List.generate(
-      line.length,
-      (i) => int.parse(line[i]),
-      growable: false,
-    );
-  }
 
   @override
   Future<int> calculate(Stream<String> input) async {
