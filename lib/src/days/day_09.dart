@@ -1,11 +1,11 @@
 import 'package:aoc_core/aoc_core.dart';
 
-int naturalNumberSum(int n) {
-  return (n * (n + 1)) ~/ 2;
-}
-
 int intSum(int a, int b) {
-  return naturalNumberSum(b) - naturalNumberSum(a - 1);
+  var sum = 0;
+  for (var i = a; i <= b; ++i) {
+    sum += i;
+  }
+  return sum;
 }
 
 @immutable
@@ -60,19 +60,30 @@ final class PartOne extends IntPart {
 final class PartTwo extends IntPart {
   const PartTwo();
 
+  Future<List<int>> _parseInput(Stream<String> input) async {
+    final line = await input.single;
+    return List.generate(
+      line.length,
+      (i) => int.parse(line[i]),
+      growable: false,
+    );
+  }
+
   @override
   Future<int> calculate(Stream<String> input) async {
-    final line = await input.single;
+    final cursorLength = await _parseInput(input);
 
-    final movedFiles = <int>{};
-    final rightCursorStart =
-        line.length % 2 == 0 ? line.length - 2 : line.length - 1;
+    final cursorIdHasMoved = List.filled(cursorLength.length, false);
+
+    final rightCursorStart = cursorLength.length % 2 == 0
+        ? cursorLength.length - 2
+        : cursorLength.length - 1;
 
     var sum = 0;
     var position = 0;
 
-    for (var leftCursor = 0; leftCursor < line.length; ++leftCursor) {
-      final leftLength = int.parse(line[leftCursor]);
+    for (var leftCursor = 0; leftCursor < cursorLength.length; ++leftCursor) {
+      final leftLength = cursorLength[leftCursor];
       final isFree = leftCursor % 2 == 1;
 
       if (isFree) {
@@ -80,28 +91,26 @@ final class PartTwo extends IntPart {
         for (var rightCursor = rightCursorStart;
             rightCursor > leftCursor && posOffset < leftLength;
             rightCursor -= 2) {
-          final rightFileId = rightCursor ~/ 2;
-          if (movedFiles.contains(rightFileId)) {
+          if (cursorIdHasMoved[rightCursor]) {
             continue;
           }
 
-          final rightLength = int.parse(line[rightCursor]);
+          final rightFileId = rightCursor ~/ 2;
+          final rightLength = cursorLength[rightCursor];
           if (rightLength > leftLength - posOffset) {
             continue;
           }
 
           final actualPosition = position + posOffset;
 
-          movedFiles.add(rightFileId);
+          cursorIdHasMoved[rightCursor] = true;
           sum += rightFileId *
               intSum(actualPosition, actualPosition + rightLength - 1);
           posOffset += rightLength;
         }
-      } else {
+      } else if (!cursorIdHasMoved[leftCursor]) {
         final fileId = leftCursor ~/ 2;
-        if (!movedFiles.contains(fileId)) {
-          sum += fileId * intSum(position, position + leftLength - 1);
-        }
+        sum += fileId * intSum(position, position + leftLength - 1);
       }
 
       position += leftLength;
