@@ -23,17 +23,17 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final blocks = await _parseInput(input);
+    final diskMap = await _parseInput(input);
 
     var sum = 0;
     var rightCursor =
-        blocks.length % 2 == 0 ? blocks.length : blocks.length + 1;
+        diskMap.length % 2 == 0 ? diskMap.length : diskMap.length + 1;
     var rightFileId = 0;
     var rightCursorRemaining = 0;
     var position = 0;
 
     for (var leftCursor = 0; leftCursor < rightCursor; ++leftCursor) {
-      final leftNum = blocks[leftCursor];
+      final leftNum = diskMap[leftCursor];
       final isFree = leftCursor % 2 == 1;
 
       if (isFree) {
@@ -41,7 +41,7 @@ final class PartOne extends IntPart {
           if (rightCursorRemaining == 0) {
             // Skip free storage
             rightCursor -= 2;
-            rightCursorRemaining = blocks[rightCursor];
+            rightCursorRemaining = diskMap[rightCursor];
             rightFileId = rightCursor ~/ 2;
           }
 
@@ -72,19 +72,18 @@ final class PartTwo extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final cursorLength = await _parseInput(input);
+    final diskMap = await _parseInput(input);
 
-    final cursorIdHasMoved = List.filled(cursorLength.length, false);
+    final cursorIdHasMoved = List.filled(diskMap.length, false);
 
-    final rightCursorStart = cursorLength.length % 2 == 0
-        ? cursorLength.length - 2
-        : cursorLength.length - 1;
+    final rightCursorStart =
+        diskMap.length % 2 == 0 ? diskMap.length - 2 : diskMap.length - 1;
 
     var sum = 0;
     var position = 0;
 
-    for (var leftCursor = 0; leftCursor < cursorLength.length; ++leftCursor) {
-      final leftLength = cursorLength[leftCursor];
+    for (var leftCursor = 0; leftCursor < diskMap.length; ++leftCursor) {
+      final leftLength = diskMap[leftCursor];
       final isFree = leftCursor % 2 == 1;
 
       if (isFree) {
@@ -97,7 +96,7 @@ final class PartTwo extends IntPart {
           }
 
           final rightFileId = rightCursor ~/ 2;
-          final rightLength = cursorLength[rightCursor];
+          final rightLength = diskMap[rightCursor];
           if (rightLength > leftLength - posOffset) {
             continue;
           }
