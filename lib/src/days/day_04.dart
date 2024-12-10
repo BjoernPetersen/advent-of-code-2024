@@ -1,13 +1,5 @@
 import 'package:aoc_core/aoc_core.dart';
 
-Future<Grid<String>> _buildGrid(Stream<String> input) async {
-  final rows = <List<String>>[];
-  await for (final line in input) {
-    rows.add(line.chars.toList(growable: false));
-  }
-  return Grid(rows);
-}
-
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
@@ -34,7 +26,7 @@ final class PartOne extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final grid = await _buildGrid(input);
+    final grid = await Grid.fromStream(input, (_, c) => c);
     var sum = 0;
     for (final position in grid.positions) {
       if (grid[position] == 'X') {
@@ -66,7 +58,7 @@ final class PartTwo extends IntPart {
 
   @override
   Future<int> calculate(Stream<String> input) async {
-    final grid = await _buildGrid(input);
+    final grid = await Grid.fromStream(input, (_, c) => c);
     var sum = 0;
     for (var y = 1; y < grid.height - 1; ++y) {
       for (var x = 1; x < grid.width - 1; ++x) {
