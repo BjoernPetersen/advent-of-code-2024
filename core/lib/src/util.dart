@@ -242,6 +242,24 @@ final class Grid<T> {
           growable: false,
         );
 
+  static Future<Grid<T>> fromStream<T>(
+    Stream<String> lines,
+    T Function(Vector, String) parseField,
+  ) async {
+    final rows = <List<T>>[];
+
+    await for (final line in lines) {
+      final row = <T>[];
+      for (final char in line.chars) {
+        final position = Vector(x: row.length, y: rows.length);
+        row.add(parseField(position, char));
+      }
+      rows.add(row);
+    }
+
+    return Grid(rows);
+  }
+
   Grid<T> clone() {
     return Grid(
       rows.map((e) => e.toList(growable: false)).toList(growable: false),
