@@ -23,48 +23,49 @@ Future<(Grid<int>, List<Vector>)> _buildGrid(Stream<String> input) async {
   return (Grid(rows), trailheads);
 }
 
+int _scoreTrailhead(
+  Grid<int> grid,
+  Vector trailhead, {
+  Set<Vector>? reachedPeaks,
+}) {
+  var score = 0;
+  final expectedHeight = grid[trailhead] + 1;
+  for (final direction in Vector.crossDirections) {
+    final position = trailhead + direction;
+    if (!grid.contains(position)) {
+      continue;
+    }
+
+    final nextHeight = grid[position];
+    if (nextHeight != expectedHeight) {
+      continue;
+    }
+
+    if (nextHeight == 9) {
+      if (reachedPeaks == null || reachedPeaks.add(position)) {
+        score += 1;
+      }
+    } else {
+      score += _scoreTrailhead(grid, position, reachedPeaks: reachedPeaks);
+    }
+  }
+
+  return score;
+}
+
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
 
-  int _scoreTrailhead(
-    Grid<int> grid,
-    Vector trailhead, {
-    required Set<Vector> reachedPeaks,
-  }) {
-    var score = 0;
-    final expectedHeight = grid[trailhead] + 1;
-    for (final direction in Vector.crossDirections) {
-      final position = trailhead + direction;
-      if (!grid.contains(position)) {
-        continue;
-      }
-
-      final nextHeight = grid[position];
-      if (nextHeight != expectedHeight) {
-        continue;
-      }
-
-      if (nextHeight == 9) {
-        if (reachedPeaks.add(position)) {
-          score += 1;
-        }
-      } else {
-        score += _scoreTrailhead(grid, position, reachedPeaks: reachedPeaks);
-      }
-    }
-
-    return score;
-  }
-
   @override
   Future<int> calculate(Stream<String> input) async {
     final (grid, trailheads) = await _buildGrid(input);
-    return trailheads
-        .map(
-          (e) => _scoreTrailhead(grid, e, reachedPeaks: {}),
-        )
-        .sum;
+
+    var sum = 0;
+    for (final trailhead in trailheads) {
+      sum += _scoreTrailhead(grid, trailhead, reachedPeaks: {});
+    }
+    return sum;
   }
 }
 
@@ -72,36 +73,9 @@ final class PartOne extends IntPart {
 final class PartTwo extends IntPart {
   const PartTwo();
 
-  int _rateTrailhead(
-    Grid<int> grid,
-    Vector trailhead,
-  ) {
-    var rating = 0;
-    final expectedHeight = grid[trailhead] + 1;
-    for (final direction in Vector.crossDirections) {
-      final position = trailhead + direction;
-      if (!grid.contains(position)) {
-        continue;
-      }
-
-      final nextHeight = grid[position];
-      if (nextHeight != expectedHeight) {
-        continue;
-      }
-
-      if (nextHeight == 9) {
-        rating += 1;
-      } else {
-        rating += _rateTrailhead(grid, position);
-      }
-    }
-
-    return rating;
-  }
-
   @override
   Future<int> calculate(Stream<String> input) async {
     final (grid, trailheads) = await _buildGrid(input);
-    return trailheads.map((e) => _rateTrailhead(grid, e)).sum;
+    return trailheads.map((e) => _scoreTrailhead(grid, e)).sum;
   }
 }
