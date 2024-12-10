@@ -46,26 +46,19 @@ final class Square {
 }
 
 Future<(Grid<Square>, Vector)> readInput(Stream<String> input) async {
-  final rows = <List<Square>>[];
   late final Vector startingPoint;
-  await for (final line in input) {
-    final row = <Square>[];
-    for (final (x, char) in line.chars.indexed) {
-      final position = Vector(x: x, y: rows.length);
-      row.add(Square(
-        position: position,
-        isObstruction: char == '#',
-      ));
 
-      if (char == '^') {
-        startingPoint = position;
-      }
+  final grid = await Grid.fromStream(input, (position, char) {
+    if (char == '^') {
+      startingPoint = position;
     }
+    return Square(
+      position: position,
+      isObstruction: char == '#',
+    );
+  });
 
-    rows.add(row);
-  }
-
-  return (Grid(rows), startingPoint);
+  return (grid, startingPoint);
 }
 
 bool walkGrid(
