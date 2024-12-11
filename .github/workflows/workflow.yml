@@ -86,10 +86,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
-        with:
-          # renovate: datasource=docker depName=dart
-          sdk: 3.5.4
+      - uses: jdx/mise-action@v2
       - run: |
           dart pub get --enforce-lockfile
           dart run build_runner build
