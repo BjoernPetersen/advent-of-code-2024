@@ -217,7 +217,9 @@ final class RunStateView extends StatelessWidget {
         const SizedBox(width: 10),
         ResultIndicator(state),
         const SizedBox(width: 10),
-        ResultText(state),
+        SelectionArea(
+          child: ResultText(state),
+        ),
       ],
     );
   }
