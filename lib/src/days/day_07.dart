@@ -91,11 +91,10 @@ final class PartTwo extends IntPart {
     var sum = 0;
 
     // Saving to avoid re-computation
-    final log10 = log(10);
     final operators = <Operator>[
       (int a, int b) => a * b,
       (int a, int b) => a + b,
-      (int a, int b) => a * pow(10, (log(b + 1) / log10).ceil()).round() + b,
+      (int a, int b) => a * pow(10, (log(b + 1) / ln10).ceil()).round() + b,
     ];
     await for (final line in input) {
       final (testValue, operands) = _parseInputLine(line);

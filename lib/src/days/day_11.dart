@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:aoc_core/aoc_core.dart';
 
-final log10 = log(10);
-
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
@@ -73,7 +71,7 @@ int _processNumber({
 
     if (current == 0) {
       current = 1;
-    } else if ((digits = (log(current + 1) / log10).ceil()) % 2 == 0) {
+    } else if ((digits = (log(current + 1) / ln10).ceil()) % 2 == 0) {
       final ordersOfMagnitude = pow(10, digits ~/ 2).round();
       final leftDigits = current ~/ ordersOfMagnitude;
       final rightDigits = current - (leftDigits * ordersOfMagnitude);
