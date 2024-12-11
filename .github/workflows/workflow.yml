@@ -84,9 +84,14 @@ jobs:
             runner: windows-latest
             filename: advent.exe
     runs-on: ${{ matrix.runner }}
+    env:
+      # renovate: datasource=docker depName=dart
+      DART_VERSION: 3.6.0
     steps:
       - uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ env.DART_VERSION }}
       - run: |
           dart pub get --enforce-lockfile
           dart run build_runner build
