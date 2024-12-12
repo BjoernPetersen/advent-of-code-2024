@@ -1,5 +1,5 @@
 [tools]
-flutter = "3.24"
+flutter = "3.27"
 
 [settings]
 asdf = true
