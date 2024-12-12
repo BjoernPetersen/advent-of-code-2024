@@ -125,13 +125,13 @@ final class PartSelection extends StatelessWidget {
       bloc: bloc,
       builder: (context, AocState state) {
         return Row(
+          spacing: 5,
           children: [
             ChoiceChip(
               label: const Text('Part 1'),
               selected: state.enablePartOne,
               onSelected: (isSelected) => bloc.add(PartOneToggled(isSelected)),
             ),
-            const SizedBox(width: 5),
             ChoiceChip(
               label: const Text('Part 2'),
               selected: state.enablePartTwo,
@@ -164,32 +164,24 @@ final class RunningState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = BlocProvider.of<AocBloc>(context);
     return DefaultTextStyle.merge(
       style: const TextStyle(fontSize: 30),
       child: Center(
-        child: BlocBuilder<AocBloc, AocState>(
-          builder: (context, state) {
-            final children = state.runStates
-                .map((s) => [
-                      RunStateView(s),
-                      const SizedBox(height: 10),
-                    ])
-                .flattened
-                .toList();
-
-            if (!state.isRunning) {
-              children.add(IconButton(
-                onPressed: () =>
-                    BlocProvider.of<AocBloc>(context).add(const ClearResult()),
-                icon: const Icon(Icons.undo),
-              ));
-            }
-
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            );
-          },
+        child: BlocBuilder(
+          bloc: bloc,
+          builder: (context, AocState state) => Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 10,
+            children: [
+              for (final runState in state.runStates) RunStateView(runState),
+              if (!state.isRunning)
+                IconButton(
+                  onPressed: () => bloc.add(const ClearResult()),
+                  icon: const Icon(Icons.undo),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -205,6 +197,7 @@ final class RunStateView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
+      spacing: 10,
       children: [
         TimerBuilder.periodic(
           const Duration(milliseconds: 100),
@@ -214,9 +207,7 @@ final class RunStateView extends StatelessWidget {
                 .toString(),
           ),
         ),
-        const SizedBox(width: 10),
         ResultIndicator(state),
-        const SizedBox(width: 10),
         SelectionArea(
           child: ResultText(state),
         ),

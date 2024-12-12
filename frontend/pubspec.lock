@@ -11,7 +11,7 @@ packages:
   aoc_core:
     dependency: transitive
     description:
-      path: "../core"
+      path: "../packages/core"
       relative: true
     source: path
     version: "1.0.0"
