@@ -107,6 +107,9 @@ jobs:
 
   build-frontend:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/blindfoldedsurgery/flutter:2.1.0-3.27
+      options: --user 0
     needs:
       - test
       - lint
@@ -114,14 +117,9 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-      - uses: jdx/mise-action@v2
       - run: |
           dart pub get
           dart run build_runner build
-      - uses: jdx/mise-action@v2
-        with:
-          cache: false
-          working_directory: frontend
       - name: Get dependencies
         working-directory: frontend
         run: flutter pub get
