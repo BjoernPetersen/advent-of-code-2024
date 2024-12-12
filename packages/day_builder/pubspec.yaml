@@ -2,14 +2,14 @@ name: day_builder
 description: Dynamically builds Day class based on existing implementations.
 version: 1.0.0
 publish_to: none
+resolution: workspace
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
 
 dependencies:
   analyzer: any
-  aoc_core:
-    path: ../core
+  aoc_core: any
   build: ^2.0.0
   build_config: ^1.0.0
   glob: any

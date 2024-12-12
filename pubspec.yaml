@@ -6,9 +6,13 @@ publish_to: none
 environment:
   sdk: ^3.6.0
 
+workspace:
+  - packages/core
+  - packages/day_builder
+
 dependencies:
   aoc_core:
-    path: core
+    path: packages/core
   args: ^2.4.2
   async: ^2.11.0
   dotenv: ^4.2.0
@@ -21,7 +25,7 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.4.0
   day_builder:
-    path: day_builder
+    path: packages/day_builder
   lints: ^5.0.0
   squadron_builder: ^6.0.0
   test: ^1.0.0
