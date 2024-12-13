@@ -12,6 +12,15 @@ final class Machine {
     required this.prize,
   });
 
+  Machine correctUnitConversionError() {
+    const offset = 10000000000000;
+    return Machine(
+      aEffect: aEffect,
+      bEffect: bEffect,
+      prize: prize + const Vector(x: offset, y: offset),
+    );
+  }
+
   @override
   String toString() {
     return 'A: $aEffect\nB: $bEffect\nPrize: $prize';
@@ -57,51 +66,51 @@ Stream<Machine> _parseMachines(Stream<String> lines) async* {
   }
 }
 
+int _calculateB(Machine machine) {
+  final a = machine.aEffect;
+  final b = machine.bEffect;
+  final p = machine.prize;
+  final dividend = (a.x * p.y - p.x * a.y);
+  final divisor = (a.x * b.y - b.x * a.y);
+
+  if (dividend % divisor != 0) {
+    return -1;
+  }
+
+  return dividend ~/ divisor;
+}
+
+int _calculateA(Machine machine, int b) {
+  final dividend = machine.prize.x - (b * machine.bEffect.x);
+  if (dividend % machine.aEffect.x != 0) {
+    return -1;
+  }
+
+  return dividend ~/ machine.aEffect.x;
+}
+
+int _calculateCost(Machine machine) {
+  final b = _calculateB(machine);
+  if (b < 0) {
+    // Not possible
+    return 0;
+  }
+
+  final a = _calculateA(machine, b);
+  if (a < 0) {
+    // Not possible
+    return 0;
+  }
+
+  return a * 3 + b;
+}
+
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
 
-  int _calculateB(Machine machine) {
-    final a = machine.aEffect;
-    final b = machine.bEffect;
-    final p = machine.prize;
-    final dividend = (a.x * p.y - p.x * a.y);
-    final divisor = (a.x * b.y - b.x * a.y);
-
-    if (dividend % divisor != 0) {
-      return -1;
-    }
-
-    return dividend ~/ divisor;
-  }
-
-  int _calculateA(Machine machine, int b) {
-    final dividend = machine.prize.x - (b * machine.bEffect.x);
-    if (dividend % machine.aEffect.x != 0) {
-      return -1;
-    }
-
-    return dividend ~/ machine.aEffect.x;
-  }
-
   @override
   Future<int> calculate(Stream<String> input) async {
-    var costSum = 0;
-    await for (final machine in _parseMachines(input)) {
-      final b = _calculateB(machine);
-      if (b < 0) {
-        // Not possible
-        continue;
-      }
-
-      final a = _calculateA(machine, b);
-      if (a < 0) {
-        // Not possible
-        continue;
-      }
-
-      costSum += a * 3 + b;
-    }
-    return costSum;
+    return await _parseMachines(input).map(_calculateCost).sum;
   }
 }
