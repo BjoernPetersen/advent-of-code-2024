@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
+import 'package:dart_style/dart_style.dart';
 import 'package:glob/glob.dart';
 
 final class Supertypes {
@@ -162,7 +163,8 @@ final class DayBuilder implements Builder {
     buffer.writeln('};');
     buffer.writeln('}');
 
-    return buffer.toString();
+    final formatter = DartFormatter();
+    return formatter.format(buffer.toString());
   }
 
   @override
