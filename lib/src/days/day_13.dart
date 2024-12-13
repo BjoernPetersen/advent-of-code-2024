@@ -114,3 +114,16 @@ final class PartOne extends IntPart {
     return await _parseMachines(input).map(_calculateCost).sum;
   }
 }
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    return await _parseMachines(input)
+        .map((m) => m.correctUnitConversionError())
+        .map(_calculateCost)
+        .sum;
+  }
+}
