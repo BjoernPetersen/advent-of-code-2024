@@ -16,7 +16,7 @@ extension StreamUtils<T> on Stream<T> {
 }
 
 extension StreamSum on Stream<int> {
-  Future<int> get sum => fold(0, (previous, element) => previous + element);
+  Future<int> get sum => reduce((previous, element) => previous + element);
 }
 
 extension IterableUtils<T> on Iterable<T> {
@@ -52,6 +52,10 @@ extension IterableUtils<T> on Iterable<T> {
       last = iterator.current;
     }
   }
+}
+
+extension IntIterableUtils on Iterable<int> {
+  int get product => reduce((l, r) => l * r);
 }
 
 @immutable
@@ -125,6 +129,13 @@ class Vector {
     return Vector(x: -x, y: -y);
   }
 
+  Vector operator %(Bounds bounds) {
+    return Vector(
+      x: x % bounds.width,
+      y: y % bounds.height,
+    );
+  }
+
   Vector abs() {
     return Vector(
       x: x.abs(),
@@ -195,6 +206,17 @@ final class Bounds {
   Vector get bottomLeft => Vector(y: height - 1);
 
   Vector get bottomRight => Vector(x: width - 1, y: height - 1);
+
+  Vector get middle {
+    if (width % 2 == 0 || height % 2 == 0) {
+      throw StateError("Even width or height, so there's no middle");
+    }
+
+    return Vector(
+      x: width ~/ 2,
+      y: height ~/ 2,
+    );
+  }
 
   Iterable<Vector> get corners => [
         topLeft,
