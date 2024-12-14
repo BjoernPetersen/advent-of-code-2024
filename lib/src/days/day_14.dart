@@ -85,3 +85,45 @@ final class PartOne extends IntPart {
     return quadrantCounts.product;
   }
 }
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(
+    Stream<String> input, {
+    Bounds? roomSizeOverride,
+  }) async {
+    final roomSize = roomSizeOverride ?? Bounds(width: 101, height: 103);
+
+    final robots = await input.map(Robot.fromLine).toList();
+    for (var seconds = 0;; seconds += 1) {
+      final quadrantCounts = List.filled(4, 0);
+      final positions = <Vector>{};
+      bool hasUniquePositions = true;
+      for (final robot in robots.map((r) => r.move(
+            bounds: roomSize,
+            seconds: seconds,
+          ))) {
+        if (!positions.add(robot.position)) {
+          hasUniquePositions = false;
+          break;
+        }
+
+        robot.countQuadrant(roomSize, quadrantCounts);
+      }
+
+      if (hasUniquePositions) {
+        // Turns out that's the only condition we need. This puzzle sucked.
+        final grid = Grid.generate(
+          width: roomSize.width,
+          height: roomSize.height,
+          generator: (position) => positions.contains(position) ? '#' : ' ',
+        );
+        print(grid.toString());
+        return seconds;
+      }
+    }
+  }
+}

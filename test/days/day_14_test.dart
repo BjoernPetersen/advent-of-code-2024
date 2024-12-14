@@ -35,27 +35,15 @@ void main() {
     group(
       'part 2',
       () {
-        late final IntPart part;
+        late final PartTwo part;
 
         setUpAll(() {
-          part = day.partTwo as IntPart;
+          part = day.partTwo as PartTwo;
         });
-
-        for (final (example, expectedResult) in [
-          ('instructions-1', 0),
-        ]) {
-          test('example $example passes', () {
-            final reader = getExampleReader(dayNum, example);
-            expect(
-              part.calculate(reader.readLines()),
-              completion(expectedResult),
-            );
-          });
-        }
 
         test('input passes', () {
           final reader = getInputReader(dayNum);
-          expect(part.calculate(reader.readLines()), completion(0));
+          expect(part.calculate(reader.readLines()), completion(7584));
         });
       },
       skip: day.partTwo == null,
