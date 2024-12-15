@@ -331,8 +331,11 @@ final class Grid<T> {
   }
 
   @override
-  String toString() {
-    return rows.map((row) => row.map((e) => e.toString()).join()).join('\n');
+  String toString([String nullChar = '.']) {
+    return rows
+        .map(
+            (row) => row.map((e) => e == null ? nullChar : e.toString()).join())
+        .join('\n');
   }
 }
 
