@@ -15,8 +15,18 @@ final class Box implements Entity {
   const Box();
 }
 
+@immutable
+class BoxLeft implements Entity {
+  const BoxLeft();
+}
+
+@immutable
+class BoxRight implements Entity {
+  const BoxRight();
+}
+
 Future<(Grid<Entity?> grid, Vector robotLocation, List<Vector> robotMoves)>
-    _parseInput(Stream<String> input) async {
+    _parseInput(Stream<String> input, {bool isWide = false}) async {
   final rows = <List<Entity?>>[];
   late final Vector robotLocation;
   final moves = <Vector>[];
@@ -38,7 +48,17 @@ Future<(Grid<Entity?> grid, Vector robotLocation, List<Vector> robotMoves)>
           'O' => const Box(),
           _ => null,
         };
-        row.add(entity);
+
+        if(isWide) {
+          if(entity is Box) {
+            row.add(const BoxLeft());
+            row.add(const BoxRight());
+          } else {
+            row.add(entity);
+            row.add(entity);
+          }
+        }else {
+        row.add(entity);}
       }
       rows.add(row);
     } else {
