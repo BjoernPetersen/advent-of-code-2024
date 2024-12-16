@@ -28,7 +28,7 @@ void main() {
         final reader = getInputReader(dayNum);
         expect(part.calculate(reader.readLines()), completion(1487337));
       });
-    }, skip: true);
+    });
     group(
       'part 2',
       () {
