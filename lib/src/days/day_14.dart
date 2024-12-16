@@ -88,6 +88,8 @@ final class PartOne extends IntPart {
 
 @immutable
 final class PartTwo extends IntPart {
+  static const printTree = false;
+
   const PartTwo();
 
   @override
@@ -116,12 +118,14 @@ final class PartTwo extends IntPart {
 
       if (hasUniquePositions) {
         // Turns out that's the only condition we need. This puzzle sucked.
-        final grid = Grid.generate(
-          width: roomSize.width,
-          height: roomSize.height,
-          generator: (position) => positions.contains(position) ? '#' : ' ',
-        );
-        print(grid.toString());
+        if (printTree) {
+          final grid = Grid.generate(
+            width: roomSize.width,
+            height: roomSize.height,
+            generator: (position) => positions.contains(position) ? '#' : ' ',
+          );
+          print(grid.toString());
+        }
         return seconds;
       }
     }
