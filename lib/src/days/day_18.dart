@@ -50,7 +50,10 @@ Vector _parsePosition(String line) {
       }
     }
 
-    final next = unvisited.first;
+    final next = unvisited.firstOrNull;
+    if (next == null) {
+      return (-1, const []);
+    }
     (current, cost: currentCost) = next;
     unvisited.remove(next);
   }
@@ -69,8 +72,11 @@ final class PartOne extends IntPart {
   const PartOne();
 
   @override
-  Future<int> calculate(Stream<String> input,
-      {int memorySize = 71, int byteCount = 1024}) async {
+  Future<int> calculate(
+    Stream<String> input, {
+    int memorySize = 71,
+    int byteCount = 1024,
+  }) async {
     final memory = Grid.generate(
       width: memorySize,
       height: memorySize,
@@ -81,27 +87,54 @@ final class PartOne extends IntPart {
       memory[bytePosition] = true;
     }
 
-    print(memory.toString((e) => e ? '#' : '.'));
-
-    final (steps, path) = _findShortestPath(
+    final (steps, _) = _findShortestPath(
       memory,
       start: Vector.zero,
       end: memory.bounds.bottomRight,
     );
 
-    print(Grid.generate(
+    return steps;
+  }
+}
+
+@immutable
+final class PartTwo extends StringPart {
+  const PartTwo();
+
+  @override
+  Future<String> calculate(
+    Stream<String> input, {
+    int memorySize = 71,
+  }) async {
+    final bytePositions = await input.map(_parsePosition).toList();
+
+    var left = 0;
+    var right = bytePositions.length - 1;
+    while (left + 1 != right) {
+      var current = left + ((right - left) ~/ 2);
+      final memory = Grid.generate(
         width: memorySize,
         height: memorySize,
-        generator: (pos) {
-          if (memory[pos]) {
-            return '#';
-          }
-          if (path.contains(pos)) {
-            return 'O';
-          }
-          return '.';
-        }));
+        generator: (pos) => false,
+      );
+      for (final bytePosition in bytePositions.take(current + 1)) {
+        memory[bytePosition] = true;
+      }
 
-    return steps;
+      final (steps, _) = _findShortestPath(
+        memory,
+        start: Vector.zero,
+        end: memory.bounds.bottomRight,
+      );
+
+      if (steps == -1) {
+        right = current;
+      } else {
+        left = current;
+      }
+    }
+
+    final firstFail = bytePositions[right];
+    return '${firstFail.x},${firstFail.y}';
   }
 }
