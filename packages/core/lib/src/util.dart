@@ -331,10 +331,9 @@ final class Grid<T> {
   }
 
   @override
-  String toString([String nullChar = '.']) {
+  String toString([String Function(T)? toString]) {
     return rows
-        .map(
-            (row) => row.map((e) => e == null ? nullChar : e.toString()).join())
+        .map((row) => row.map(toString ?? (e) => e.toString()).join())
         .join('\n');
   }
 }
