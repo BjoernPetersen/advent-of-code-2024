@@ -92,9 +92,10 @@ final class PartOne extends IntPart {
       start: start,
       end: end,
     );
+    print('Vanilla path costs $vanillaCost');
     final cheatScores = <Vector, int>{};
 
-    for (final (index, pathField) in vanillaPath.indexed) {
+    for (final (index, pathField) in vanillaPath.reversed.indexed) {
       if (index % 500 == 0) {
         print('Checking path segment $index');
       }
@@ -103,15 +104,18 @@ final class PartOne extends IntPart {
           continue;
         }
 
+
+
         if (!grid[neighbor]) {
           continue;
         }
 
         grid[neighbor] = false;
-        final (cheatCost, _) = _findShortestPath(grid, start: start, end: end);
+        final (cheatCost, _) =
+            _findShortestPath(grid, start: pathField, end: end);
         grid[neighbor] = true;
 
-        final cheatScore = vanillaCost - cheatCost;
+        final cheatScore = vanillaCost - (cheatCost + index);
         cheatScores[neighbor] = cheatScore;
       }
     }
