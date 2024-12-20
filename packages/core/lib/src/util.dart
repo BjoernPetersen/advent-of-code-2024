@@ -129,6 +129,10 @@ class Vector {
     return Vector(x: -x, y: -y);
   }
 
+  Vector operator ~/(int n) {
+    return Vector(x: x ~/ n, y: y ~/ n);
+  }
+
   Vector operator %(Bounds bounds) {
     return Vector(
       x: x % bounds.width,
