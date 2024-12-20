@@ -104,7 +104,21 @@ final class PartOne extends IntPart {
           continue;
         }
 
+        bool isDeadEnd = true;
+        for (final next in Vector.crossDirections.map((d) => neighbor + d)) {
+          if (next == pathField) {
+            continue;
+          }
 
+          if (grid.contains(next) && !grid[next]) {
+            isDeadEnd = false;
+          }
+        }
+
+        if (isDeadEnd) {
+          cheatScores[neighbor] = 0;
+          continue;
+        }
 
         if (!grid[neighbor]) {
           continue;
