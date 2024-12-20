@@ -59,6 +59,126 @@ import 'package:aoc_core/aoc_core.dart';
   return (currentCost, path);
 }
 
+Iterable<Vector> _findCheatEnds(
+  Grid<bool> grid, {
+  required Set<Vector> path,
+  required int maxDistance,
+  required Vector start,
+}) sync* {
+  for (var x = 0; x <= maxDistance; x += 1) {
+    for (var y = 0; y <= (maxDistance - x); y += 1) {
+      final baseDiff = Vector(x: x, y: y);
+      if (baseDiff == Vector.zero) {
+        continue;
+      }
+      final diffs = [
+        baseDiff,
+        baseDiff.rotate(clockwise: true),
+        -baseDiff,
+        baseDiff.rotate(clockwise: false),
+      ];
+      for (final diff in diffs) {
+        final neighbor = start + diff;
+        if (path.contains(neighbor)) {
+          yield neighbor;
+        }
+      }
+    }
+  }
+}
+
+Future<(Grid<bool>, {Vector start, Vector end})> _parseInput(
+  Stream<String> input,
+) async {
+  late final Vector start;
+  late final Vector end;
+  final grid = await Grid.fromStream(input, (pos, char) {
+    switch (char) {
+      case '.':
+        return false;
+      case '#':
+        return true;
+      case 'S':
+        start = pos;
+        return false;
+      case 'E':
+        end = pos;
+        return false;
+      case _:
+        throw ArgumentError.value(char, 'char', 'Unrecognized char on map');
+    }
+  });
+
+  return (grid, start: start, end: end);
+}
+
+Map<(Vector, Vector), int> _findCheats(
+  Grid<bool> grid, {
+  required Vector start,
+  required Vector end,
+  required List<Vector> vanillaPath,
+  int maxDistance = 2,
+}) {
+  final cheatScores = <(Vector, Vector), int>{};
+  final uniquePath = vanillaPath.toSet();
+
+  for (final (index, pathField) in vanillaPath.indexed) {
+    if (index % 500 == 0) {
+      print('Checking path segment $index');
+    }
+
+    for (final otherPath in _findCheatEnds(
+      grid,
+      start: pathField,
+      maxDistance: maxDistance,
+      path: uniquePath,
+    )) {
+      if (cheatScores.containsKey((pathField, otherPath)) ||
+          cheatScores.containsKey((otherPath, pathField))) {
+        continue;
+      }
+
+      final Vector distance = otherPath - pathField;
+      final cheatCost = distance.manhattanNorm();
+      final previousCost = _findPathDistance(
+        vanillaPath,
+        start: index,
+        minDistance: cheatCost,
+        otherPath,
+      );
+      final cheatScore = previousCost - cheatCost;
+      cheatScores[(pathField, otherPath)] = cheatScore;
+    }
+  }
+  return cheatScores;
+}
+
+int _findPathDistance(
+  List<Vector> path,
+  Vector other, {
+  required int start,
+  required int minDistance,
+}) {
+  late final int otherIndex;
+  for (var dist = minDistance; true; dist += 1) {
+    final right = start + dist;
+    if (right < path.length && path[right] == other) {
+      otherIndex = right;
+      break;
+    }
+    final left = start - dist;
+    if (left >= 0 && path[left] == other) {
+      otherIndex = left;
+      break;
+    }
+
+    if (dist > path.length) {
+      throw StateError('Could not find path distance');
+    }
+  }
+  return (start - otherIndex).abs();
+}
+
 @immutable
 final class PartOne extends IntPart {
   const PartOne();
@@ -68,72 +188,44 @@ final class PartOne extends IntPart {
     Stream<String> input, {
     int countThreshold = 100,
   }) async {
-    late final Vector start;
-    late final Vector end;
-    final grid = await Grid.fromStream(input, (pos, char) {
-      switch (char) {
-        case '.':
-          return false;
-        case '#':
-          return true;
-        case 'S':
-          start = pos;
-          return false;
-        case 'E':
-          end = pos;
-          return false;
-        case _:
-          throw ArgumentError.value(char, 'char', 'Unrecognized char on map');
-      }
-    });
-
-    final (vanillaCost, vanillaPath) = _findShortestPath(
+    final (grid, start: start, end: end) = await _parseInput(input);
+    final (_, vanillaPath) = _findShortestPath(
       grid,
       start: start,
       end: end,
     );
-    print('Vanilla path costs $vanillaCost');
-    final cheatScores = <Vector, int>{};
+    final cheatScores = _findCheats(
+      grid,
+      start: start,
+      end: end,
+      vanillaPath: vanillaPath.reversed.toList(growable: false),
+    );
+    return cheatScores.values.where((s) => s >= countThreshold).count;
+  }
+}
 
-    for (final (index, pathField) in vanillaPath.reversed.indexed) {
-      if (index % 500 == 0) {
-        print('Checking path segment $index');
-      }
-      for (final neighbor in Vector.crossDirections.map((d) => pathField + d)) {
-        if (cheatScores.containsKey(neighbor)) {
-          continue;
-        }
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
 
-        bool isDeadEnd = true;
-        for (final next in Vector.crossDirections.map((d) => neighbor + d)) {
-          if (next == pathField) {
-            continue;
-          }
-
-          if (grid.contains(next) && !grid[next]) {
-            isDeadEnd = false;
-          }
-        }
-
-        if (isDeadEnd) {
-          cheatScores[neighbor] = 0;
-          continue;
-        }
-
-        if (!grid[neighbor]) {
-          continue;
-        }
-
-        grid[neighbor] = false;
-        final (cheatCost, _) =
-            _findShortestPath(grid, start: pathField, end: end);
-        grid[neighbor] = true;
-
-        final cheatScore = vanillaCost - (cheatCost + index);
-        cheatScores[neighbor] = cheatScore;
-      }
-    }
-
+  @override
+  Future<int> calculate(
+    Stream<String> input, {
+    int countThreshold = 100,
+  }) async {
+    final (grid, start: start, end: end) = await _parseInput(input);
+    final (_, vanillaPath) = _findShortestPath(
+      grid,
+      start: start,
+      end: end,
+    );
+    final cheatScores = _findCheats(
+      grid,
+      start: start,
+      end: end,
+      vanillaPath: vanillaPath,
+      maxDistance: 20,
+    );
     return cheatScores.values.where((s) => s >= countThreshold).count;
   }
 }
