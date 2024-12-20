@@ -63,3 +63,46 @@ final class PartOne extends IntPart {
     return designs.where(pattern.hasMatch).count;
   }
 }
+
+int calcNumberOfCombos(
+  String design,
+  Set<String> towels,
+  Map<String, int> cache,
+) {
+  if (design.isEmpty) {
+    return 1;
+  }
+
+  final int? cached;
+  if ((cached = cache[design]) != null) {
+    return cached!;
+  }
+
+  var count = 0;
+  for (final towel in towels) {
+    if (design.startsWith(towel)) {
+      final rest = calcNumberOfCombos(
+        design.substring(towel.length),
+        towels,
+        cache,
+      );
+      count += rest;
+    }
+  }
+
+  cache[design] = count;
+  return count;
+}
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    final (towels: towels, designs: designs) = await _parseInput(input);
+    return designs
+        .map((design) => calcNumberOfCombos(design, towels.toSet(), {}))
+        .sum;
+  }
+}
