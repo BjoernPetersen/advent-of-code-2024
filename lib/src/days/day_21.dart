@@ -69,9 +69,20 @@ final class Keypad<T> {
   Iterable<Vector> moveToKey(T key) sync* {
     final destination = _keys[key]!;
     final diff = destination - _pointer;
-    var corner = Vector(x: _pointer.x + diff.x, y: _pointer.y);
-    if (corner == _blank || corner == _pointer) {
+    Vector corner;
+    if (diff.x < 0 || diff.y == 0) {
+      // Prefer going left
+      corner = Vector(x: _pointer.x + diff.x, y: _pointer.y);
+    } else {
       corner = Vector(x: _pointer.x, y: _pointer.y + diff.y);
+    }
+
+    if (corner == _blank || corner == _pointer) {
+      if (corner.x == _pointer.x) {
+        corner = Vector(x: _pointer.x + diff.x, y: _pointer.y);
+      } else {
+        corner = Vector(x: _pointer.x, y: _pointer.y + diff.y);
+      }
     }
 
     final sign = (corner - _pointer).sign;

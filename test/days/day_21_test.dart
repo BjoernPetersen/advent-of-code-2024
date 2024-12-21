@@ -25,8 +25,7 @@ void main() {
 
       test('input passes', () {
         final reader = getInputReader(dayNum);
-        expect(part.calculate(reader.readLines()), completion(lessThan(225234)));
-        //expect(part.calculate(reader.readLines()), completion(0));
+        expect(part.calculate(reader.readLines()), completion(217662));
       });
     });
     group(
