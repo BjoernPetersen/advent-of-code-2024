@@ -147,6 +147,8 @@ class Vector {
     );
   }
 
+  Vector get sign => Vector(x: x.sign, y: y.sign);
+
   int manhattanNorm() {
     final abs = this.abs();
     return abs.x + abs.y;
