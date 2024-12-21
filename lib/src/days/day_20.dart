@@ -123,10 +123,6 @@ Map<(Vector, Vector), int> _findCheats(
   final uniquePath = vanillaPath.toSet();
 
   for (final (index, pathField) in vanillaPath.indexed) {
-    if (index % 500 == 0) {
-      print('Checking path segment $index');
-    }
-
     for (final otherPath in _findCheatEnds(
       grid,
       start: pathField,
