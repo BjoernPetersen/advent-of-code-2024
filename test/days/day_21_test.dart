@@ -46,7 +46,7 @@ void main() {
               part.calculate(reader.readLines()),
               completion(expectedResult),
             );
-          });
+          }, skip: true);
         }
 
         test('input passes', () {

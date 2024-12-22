@@ -2,10 +2,10 @@ import 'package:aoc_core/aoc_core.dart';
 
 final class Keypad<T> {
   final Map<T, Vector> _keys;
-  final T _confirmKey;
   final Vector _blank;
   Vector _pointer;
   final Keypad<Vector>? controlledBy;
+  final Map<(Vector, T), (Vector, List<Vector>)> cache;
 
   Keypad(
     this._keys, {
@@ -13,8 +13,8 @@ final class Keypad<T> {
     required this.controlledBy,
     required Vector blank,
   })  : _pointer = _keys[confirmKey]!,
-        _confirmKey = confirmKey,
-        _blank = blank;
+        _blank = blank,
+        cache = {};
 
   static Keypad<Vector> directional({required Keypad<Vector>? controlledBy}) {
     return Keypad(
@@ -31,7 +31,7 @@ final class Keypad<T> {
     );
   }
 
-  static Keypad<String> numerical({required Keypad<Vector>? controlledBy}) {
+  static Keypad<String> numerical({required Keypad<Vector> controlledBy}) {
     return Keypad(
       {
         '7': Vector(x: 0, y: 0),
@@ -53,7 +53,14 @@ final class Keypad<T> {
   }
 
   Iterable<Vector> pressKey(T key) sync* {
-    final ownMoves = moveToKey(key);
+    final (newPoint, ownMoves) = cache.putIfAbsent(
+      (_pointer, key),
+      () {
+        final moves= moveToKey(key).toList(growable: false);
+        return (_pointer, moves);
+      },
+    );
+    _pointer=newPoint;
     final controller = controlledBy;
     if (controller == null) {
       yield* ownMoves;
@@ -109,7 +116,7 @@ final class PartOne extends IntPart {
       final directional = <Keypad<Vector>>[];
       directional.add(Keypad.directional(controlledBy: directional.lastOrNull));
       directional.add(Keypad.directional(controlledBy: directional.lastOrNull));
-      final numerical = Keypad.numerical(controlledBy: directional.lastOrNull);
+      final numerical = Keypad.numerical(controlledBy: directional.last);
 
       final moves = <Vector>[];
       for (final number in line.chars) {
@@ -118,6 +125,35 @@ final class PartOne extends IntPart {
       print('Moves for $line: ${moves.map(moveToString).join()}');
       final fullNum = int.parse(line.substring(0, line.length - 1));
       sum += fullNum * moves.length;
+    }
+
+    return sum;
+  }
+}
+
+@immutable
+final class PartTwo extends IntPart {
+  const PartTwo();
+
+  @override
+  Future<int> calculate(Stream<String> input) async {
+    var sum = 0;
+
+    await for (final line in input) {
+      final directional = <Keypad<Vector>>[];
+      for (var index = 0; index < 25; index += 1) {
+        directional.add(Keypad.directional(
+          controlledBy: directional.lastOrNull,
+        ));
+      }
+      final numerical = Keypad.numerical(controlledBy: directional.last);
+
+      var moves = 0;
+      for (final number in line.chars) {
+        moves += numerical.pressKey(number).count;
+      }
+      final fullNum = int.parse(line.substring(0, line.length - 1));
+      sum += fullNum * moves;
     }
 
     return sum;
