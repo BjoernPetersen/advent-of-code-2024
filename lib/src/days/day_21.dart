@@ -2,7 +2,6 @@ import 'package:aoc_core/aoc_core.dart';
 
 final class Keypad<T> {
   final Map<T, Vector> _keys;
-  final T _confirmKey;
   final Vector _blank;
   Vector _pointer;
   final Keypad<Vector>? controlledBy;
@@ -13,7 +12,6 @@ final class Keypad<T> {
     required this.controlledBy,
     required Vector blank,
   })  : _pointer = _keys[confirmKey]!,
-        _confirmKey = confirmKey,
         _blank = blank;
 
   static Keypad<Vector> directional({required Keypad<Vector>? controlledBy}) {
