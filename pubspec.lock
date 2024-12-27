@@ -498,18 +498,18 @@ packages:
     dependency: "direct main"
     description:
       name: squadron
-      sha256: dfbbf067d2aca2d6ddb7420c06e2ccf3ab0334948d5377d7b0dea2a08e051801
+      sha256: b6f2e46f04c287e13a04f8ee4072e7895d32df8a296803cb7e7d87585bb7cd36
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.4"
+    version: "6.1.6"
   squadron_builder:
     dependency: "direct dev"
     description:
       name: squadron_builder
-      sha256: "330cb647bd6f89072aac0368b5ac752c02508251ae3d63fcd0584f5301845698"
+      sha256: d67def4b7181c374d7127cd7aa850081abaaca5382917515a6ac83224079707d
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.2"
+    version: "6.1.5"
   stack_trace:
     dependency: transitive
     description:
