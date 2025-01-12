@@ -154,7 +154,7 @@ jobs:
     environment:
       name: Production
       url: https://aoc.bjoernpetersen.net/2024/
-    container: rclone/rclone:1.68
+    container: rclone/rclone:1.69
     steps:
       - uses: actions/download-artifact@v4
         with:
