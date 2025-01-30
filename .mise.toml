@@ -1,5 +1,5 @@
 [tools]
-dart = "3.6.1"
+dart = "3.6.2"
 
 [settings]
 asdf = false
