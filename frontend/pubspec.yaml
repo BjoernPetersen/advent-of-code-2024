@@ -27,7 +27,7 @@ dependencies:
     path: ..
   bloc_concurrency: ^0.2.5
   cupertino_icons: ^1.0.8
-  file_picker: ^8.1.4
+  file_picker: ^9.0.0
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
