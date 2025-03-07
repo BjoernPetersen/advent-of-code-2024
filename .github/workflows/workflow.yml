@@ -112,7 +112,7 @@ jobs:
   build-frontend:
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/blindfoldedsurgery/flutter:2.1.0-3.27
+      image: ghcr.io/blindfoldedsurgery/flutter:3.0.0-3.27
       options: --user 0
     needs:
       - test
