@@ -3,4 +3,5 @@
   "extends": [
     "local>BlindfoldedSurgery/renovate-config"
   ]
+  "enabled": false
 }
